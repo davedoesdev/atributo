@@ -234,7 +234,7 @@ Atributo.default_allocator = function (job_id, instance_ids, cb)
     let h = crypto.createHash('md5'); // not for security, just mapping
     h.update(job_id);
     let buf = h.digest();
-    cb(null, instance_ids[buf.readUInt32BE(0) % instance_ids.length]);
+    cb(null, true, instance_ids[buf.readUInt32BE(0) % instance_ids.length]);
 };
 
 exports.Atributo = Atributo;
