@@ -1,8 +1,3 @@
-// TODO
-// Migration produces empty DB, do we just copy that for a project?
-// Jobs are just string IDs. Should we have a job table that's extensible?
-// Gruntfile, tests, docs
-
 const crypto = require('crypto'),
       sqlite3 = require('sqlite3'),
       async = require('async'),
@@ -12,6 +7,8 @@ class Atributo extends EventEmitter
 {
     constructor(options)
     {
+        super();
+
         this._db = new sqlite3.Database(options.db_filename);
         this._db.on('error', this.emit.bind(this, 'error'));
         this._db.on('open', this.emit.bind(this, 'ready'));
@@ -38,7 +35,7 @@ class Atributo extends EventEmitter
             {
                 this._db.run('ROLLBACK',
                              cb);
-            }, err2 => cb(err2 || err, ..args);
+            }, err2 => cb(err2 || err, ...args));
         }
 
         this._queue.push(cb =>
@@ -129,7 +126,15 @@ class Atributo extends EventEmitter
             this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
                          instance_id,
                          cb);
-        }, cb);
+        }, (err, r) =>
+        {
+            if (err)
+            {
+                return cb(err);
+            }
+
+            cb(null, r['count(*)'] === 0);
+        });
     }
 
     allocate(job_id, options, cb)
@@ -220,7 +225,7 @@ class Atributo extends EventEmitter
 
     deallocate(job_id, cb)
     {
-        this._queue.push(cb ->
+        this._queue.push(cb =>
         {
             this._db.run('DELETE FROM allocations WHERE job = ?;',
                          job_id,
