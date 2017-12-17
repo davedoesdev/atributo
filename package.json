@@ -1,0 +1,42 @@
+{
+  "name": "atributo",
+  "description": "Allocate records across a variable number of instances",
+  "version": "0.0.1",
+  "homepage": "https://github.com/davedoesdev/atributo",
+  "author": {
+    "name": "David Halls",
+    "email": "dave@davedoesdev.com",
+    "url": "http://www.davedoesdev.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davedoesdev/atributo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davedoesdev/atributo/issues"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "shard",
+    "expand",
+    "contract"
+  ],
+  "dependencies": {
+    "sqlite3": "~3.1.13",
+    "async": "~2.6.0"
+  },
+  "devDependencies": {
+    "grunt": "~1.0.1",
+    "grunt-eslint": "20.1.0",
+    "grunt-mocha-test": "~0.13.3",
+    "grunt-exec": "~3.0.0",
+    "mocha": "~4.0.1",
+    "chai": "~4.1.2",
+    "nyc": "~11.3.0",
+    "migrate": "~1.0.0"
+  }
+}
