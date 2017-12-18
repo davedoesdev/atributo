@@ -31,14 +31,14 @@ class Atributo extends EventEmitter
     {
         if (err)
         {
-            return this._queue.push(cb =>
+            return this._queue.unshift(cb =>
             {
                 this._db.run('ROLLBACK',
                              cb);
             }, err2 => cb(err2 || err, ...args));
         }
 
-        this._queue.push(cb =>
+        this._queue.unshift(cb =>
         {
             this._db.run('END TRANSACTION',
                          cb);
@@ -77,7 +77,7 @@ class Atributo extends EventEmitter
 
     unavailable(instance_id, destroyed, cb)
     {
-        let queries = [
+        let statements = [
             cb =>
             {
                 this._db.run('BEGIN IMMEDIATE TRANSACTION',
@@ -99,7 +99,7 @@ class Atributo extends EventEmitter
 
         if (destroyed)
         {
-            queries.push(
+            statements.push(
                 cb =>
                 {
                     this._db.run('DELETE FROM allocations WHERE instance = ?;',
@@ -115,26 +115,25 @@ class Atributo extends EventEmitter
             );
         }
 
-        this._queue.push(cb => async.waterfall(queries, cb),
+        this._queue.push(cb => async.waterfall(statements, cb),
                          this._end_transaction.bind(this, cb));
     }
 
     has_no_jobs(instance_id, cb)
     {
-        this._queue.push(cb =>
-        {
-            this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
-                         instance_id,
-                         cb);
-        }, (err, r) =>
-        {
-            if (err)
+        this._queue.push(cb => async.waterfall(
+        [
+            cb =>
             {
-                return cb(err);
+                this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
+                             instance_id,
+                             cb);
+            },
+            (r, cb) =>
+            {
+                cb(null, r['count(*)'] === 0);
             }
-
-            cb(null, r['count(*)'] === 0);
-        });
+        ], cb), cb);
     }
 
     allocate(job_id, options, cb)
@@ -163,35 +162,41 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), (err, instance_ids) =>
+        ], cb), (err, instance_id) =>
         {
             if (err)
             {
                 return this._end_transaction(cb, err);
             }
 
-            if (instance_ids.length > 0)
+            if (instance_id !== undefined)
             {
-                return this._end_transaction(cb, null, false, instance_id[0]);
+                return this._end_transaction(cb, null, false, instance_id);
             }
 
-            this._queue.push(cb => 
+            this._queue.unshift(cb => 
             {
-                this._db.get('SELECT id FROM instances WHERE available = 1;',
+                this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, (err, instance_ids) =>
+            }, (err, r) =>
             {
                 if (err)
                 {
                     return this._end_transaction(cb, err);
                 }
 
-                if (instance_ids.length === 0)
+                if (r.length === 0)
                 {
                     return this._end_transaction(cb, new Error('no instances'));
                 }
 
-                options.allocator.call(this, job_id, instance_ids, (err, allocate, instance_id) =>
+                this._queue.unshift(cb =>
+                {
+                    options.allocator.call(this,
+                                           job_id,
+                                           r.map(row => row.id),
+                                           cb);
+                }, (err, allocate, instance_id) =>
                 {
                     if (err)
                     {
@@ -203,7 +208,7 @@ class Atributo extends EventEmitter
                         return this._end_transaction(cb, null, false, instance_id);
                     }
 
-                    this._queue.push(cb =>
+                    this._queue.unshift(cb =>
                     {
                         this._db.run('INSERT INTO allocations VALUES (?, ?);',
                                      job_id,

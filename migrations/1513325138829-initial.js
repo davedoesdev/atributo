@@ -28,7 +28,7 @@ module.exports.up = function (next)
             {
                 this.run('CREATE TABLE allocations (' +
                          '  job TEXT UNIQUE,' +
-                         '  instance TEXT UNIQUE,' +
+                         '  instance TEXT,' +
                          '  FOREIGN KEY(instance) REFERENCES instances(id));',
                          cb);
             }
