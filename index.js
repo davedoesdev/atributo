@@ -140,6 +140,43 @@ class Atributo extends EventEmitter
         ], cb), cb);
     }
 
+    jobs(instance_id, cb)
+    {
+        this._queue.push(cb => async.waterfall(
+        [
+            cb =>
+            {
+                this._db.all('SELECT job from allocations WHERE instance = ?;',
+                             instance_id,
+                             cb);
+            },
+            (r, cb) =>
+            {
+                cb(null, r.map(row => row.job));
+            }
+        ], cb), cb);
+    }
+
+    instances(cb)
+    {
+        this._queue.push(cb => async.waterfall(
+        [
+            cb =>
+            {
+                this._db.all('SELECT * from instances;',
+                             cb);
+            },
+            (r, cb) =>
+            {
+                for (let row of r)
+                {
+                    row.available = !!row.available;
+                }
+                cb(null, r);
+            }
+        ], cb), cb);
+    }
+
     allocate(job_id, options, cb)
     {
         if (typeof options === 'function')
@@ -152,6 +189,8 @@ class Atributo extends EventEmitter
         {
             allocator: Atributo.default_allocator
         }, options);
+
+        let end = this._end_transaction(cb);
 
         this._queue.push(cb => async.waterfall(
         [
@@ -166,22 +205,22 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), iferr(this._end_transaction(cb), r =>
+        ], cb), iferr(end, r =>
         {
             if (r !== undefined)
             {
-                return this._end_transaction(cb)(null, false, r.instance);
+                return end(null, false, r.instance);
             }
 
             this._queue.unshift(cb => 
             {
                 this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, iferr(this._end_transaction(cb), r =>
+            }, iferr(end, r =>
             {
                 if (r.length === 0)
                 {
-                    return this._end_transaction(cb)(new Error('no instances'));
+                    return end(new Error('no instances'));
                 }
 
                 this._queue.unshift(cb =>
@@ -190,11 +229,11 @@ class Atributo extends EventEmitter
                                            job_id,
                                            r.map(row => row.id),
                                            cb);
-                }, iferr(this._end_transaction(cb), (allocate, instance_id) =>
+                }, iferr(end, (allocate, instance_id) =>
                 {
                     if (!allocate)
                     {
-                        return this._end_transaction(cb)(null, false, instance_id);
+                        return end(null, false, instance_id);
                     }
 
                     this._queue.unshift(cb =>
@@ -203,9 +242,9 @@ class Atributo extends EventEmitter
                                      job_id,
                                      instance_id,
                                      cb);
-                    }, iferr(this._end_transaction(cb), r =>
+                    }, iferr(end, r =>
                     {
-                        this._end_transaction(cb)(null, true, instance_id);
+                        end(null, true, instance_id);
                     }));
                 }));
             }));

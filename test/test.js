@@ -190,6 +190,26 @@ describe('atributo', function ()
         }, cb);
     });
 
+    it('should get jobs for an instance', function (cb)
+    {
+        ao.jobs('foo', function (err, job_ids)
+        {
+            if (err) { return cb(err); }
+            expect(job_ids).to.eql(['bar', 'bar3']);
+            ao.jobs('foo2', function (err, job_ids)
+            {
+                if (err) { return cb(err); }
+                expect(job_ids).to.eql(['bar2', 'bar5']);
+                ao.jobs('foo3', function (err, job_ids)
+                {
+                    if (err) { return cb(err); }
+                    expect(job_ids).to.eql([]);
+                    cb();
+                });
+            });
+        });
+    });
+
     it('should be able to deallocate job', function (cb)
     {
         ao.deallocate('bar5', function (err)
@@ -327,6 +347,41 @@ describe('atributo', function ()
         });
     });
 
+    it('should get jobs for an instance', function (cb)
+    {
+        ao.jobs('foo', function (err, job_ids)
+        {
+            if (err) { return cb(err); }
+            expect(job_ids).to.eql(['bar', 'bar3', 'bar9']);
+            ao.jobs('foo2', function (err, job_ids)
+            {
+                if (err) { return cb(err); }
+                expect(job_ids).to.eql([]);
+                ao.jobs('foo3', function (err, job_ids)
+                {
+                    if (err) { return cb(err); }
+                    expect(job_ids).to.eql([]);
+                    cb();
+                });
+            });
+        });
+    });
+
+    it('should get instances', function (cb)
+    {
+        ao.instances(function (err, instances)
+        {
+            if (err) { return cb(err); }
+            expect(instances).to.eql(
+            [
+                { id: 'foo', available: true },
+                { id: 'foo2', available: false },
+                { id: 'foo3', available: true }
+            ]);
+            cb();
+        });
+    });
+
     it('should error if db errors', function (cb)
     {
         let ao = new Atributo(
@@ -342,7 +397,6 @@ describe('atributo', function ()
         });
     });
 
-    // get jobs for an instance?
     // multi-process stress test
 
     after(function (cb)
