@@ -119,7 +119,7 @@ class Atributo extends EventEmitter
                          this._end_transaction.bind(this, cb));
     }
 
-    has_no_jobs(instance_id, cb)
+    has_jobs(instance_id, cb)
     {
         this._queue.push(cb => async.waterfall(
         [
@@ -131,7 +131,7 @@ class Atributo extends EventEmitter
             },
             (r, cb) =>
             {
-                cb(null, r['count(*)'] === 0);
+                cb(null, r['count(*)'] > 0);
             }
         ], cb), cb);
     }
@@ -162,16 +162,16 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), (err, instance_id) =>
+        ], cb), (err, r) =>
         {
             if (err)
             {
                 return this._end_transaction(cb, err);
             }
 
-            if (instance_id !== undefined)
+            if (r !== undefined)
             {
-                return this._end_transaction(cb, null, false, instance_id);
+                return this._end_transaction(cb, null, false, r.instance);
             }
 
             this._queue.unshift(cb => 
