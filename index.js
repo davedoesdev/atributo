@@ -1,6 +1,7 @@
 const crypto = require('crypto'),
       sqlite3 = require('sqlite3'),
       async = require('async'),
+      iferr = require('iferr'),
       EventEmitter = require('events').EventEmitter;
 
 class Atributo extends EventEmitter
@@ -162,13 +163,8 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), (err, r) =>
+        ], cb), iferr(this._end_transaction.bind(this, cb), r =>
         {
-            if (err)
-            {
-                return this._end_transaction(cb, err);
-            }
-
             if (r !== undefined)
             {
                 return this._end_transaction(cb, null, false, r.instance);
@@ -178,13 +174,8 @@ class Atributo extends EventEmitter
             {
                 this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, (err, r) =>
+            }, iferr(this._end_transaction.bind(this, cb), r =>
             {
-                if (err)
-                {
-                    return this._end_transaction(cb, err);
-                }
-
                 if (r.length === 0)
                 {
                     return this._end_transaction(cb, new Error('no instances'));
@@ -196,13 +187,8 @@ class Atributo extends EventEmitter
                                            job_id,
                                            r.map(row => row.id),
                                            cb);
-                }, (err, allocate, instance_id) =>
+                }, iferr(this._end_transaction.bind(this, cb), (allocate, instance_id) =>
                 {
-                    if (err)
-                    {
-                        return this._end_transaction(cb, err);
-                    }
-
                     if (!allocate)
                     {
                         return this._end_transaction(cb, null, false, instance_id);
@@ -214,18 +200,13 @@ class Atributo extends EventEmitter
                                      job_id,
                                      instance_id,
                                      cb);
-                    }, err =>
+                    }, iferr(this._end_transaction.bind(this, cb), r =>
                     {
-                        if (err)
-                        {
-                            return this._end_transaction(cb, err);
-                        }
-
                         this._end_transaction(cb, null, true, instance_id);
-                    });
-                });
-            });
-        });
+                    }));
+                }));
+            }));
+        }));
     }
 
     deallocate(job_id, cb)

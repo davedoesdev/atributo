@@ -291,8 +291,41 @@ describe('atributo', function ()
         });
     });
 
-    // check coverage
-    // custom allocator
+    it('should support a custom allocator', function (cb)
+    {
+        let called = false;
+
+        ao.available('foo3', function (err)
+        {
+            if (err) { return cb(err); }
+            ao.allocate('bar11',
+            {
+                allocator: function (job_id, instance_ids, cb)
+                {
+                    called = true;
+                    Atributo.default_allocator(job_id, instance_ids, function (err, allocated, instance_id)
+                    {
+                        if (err) { return cb(err); }
+                        expect(allocated).to.be.true;
+                        expect(instance_id).to.equal('foo3');
+                        cb(null, false, instance_id);
+                    });
+                }
+            }, function (err, allocated, instance_id)
+            {
+                expect(called).to.be.true;
+                expect(allocated).to.be.false;
+                expect(instance_id).to.equal('foo3');
+                ao.has_jobs('foo3', function (err, v)
+                {
+                    if (err) { return cb(err); }
+                    expect(v).to.be.false;
+                    cb();
+                });
+            });
+        });
+    });
+
     // get jobs for an instance?
     // multi-process stress test
 
