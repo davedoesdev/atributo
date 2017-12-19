@@ -1,6 +1,7 @@
 const path = require('path'),
       async = require('async'),
       expect = require('chai').expect,
+      sqlite3 = require('sqlite3'),
       Atributo = require('..').Atributo;
 
 describe('atributo', function ()
@@ -323,6 +324,21 @@ describe('atributo', function ()
                     cb();
                 });
             });
+        });
+    });
+
+    it('should error if db errors', function (cb)
+    {
+        let ao = new Atributo(
+        {
+            db_filename: path.join(__dirname, 'does_not_exist.sqlite3'),
+            db_mode: sqlite3.OPEN_READONLY
+        });
+
+        ao.on('error', function (err)
+        {
+            expect(err.message).to.equal('SQLITE_CANTOPEN: unable to open database file');
+            cb();
         });
     });
 

@@ -22,7 +22,7 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>68/68</span>
+        <span class='fraction'>71/71</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>39/39</span>
+        <span class='fraction'>42/42</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>63/63</span>
+        <span class='fraction'>64/64</span>
       </div>
     </div>
   </div>
@@ -274,7 +274,10 @@
 229
 230
 231
-232</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+232
+233
+234
+235</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -284,11 +287,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -306,6 +309,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">71x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -320,6 +325,7 @@
 <span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -517,9 +523,9 @@ class Atributo extends EventEmitter
     {
         super();
 &nbsp;
-        this._db = new sqlite3.Database(options.db_filename);
-        this._db.on('error', this.emit.bind(this, 'error'));
-        this._db.on('open', this.emit.bind(this, 'ready'));
+        this._db = new sqlite3.Database(options.db_filename, options.db_mode);
+        this._db.on('error', err =&gt; this.emit('error', err));
+        this._db.on('open', () =&gt; this.emit('ready'));
 &nbsp;
         // We need to queue queries on a db connection:
         // https://github.com/mapbox/node-sqlite3/issues/304
@@ -535,22 +541,25 @@ class Atributo extends EventEmitter
         this._db.close(cb);
     }
 &nbsp;
-    _end_transaction(cb, err, ...args)
+    _end_transaction(cb)
     {
-        if (err)
+        return (err, ...args) =&gt;
         {
-            return this._queue.unshift(cb =&gt;
+            if (err)
             {
-                this._db.run('ROLLBACK',
-                             cb);
-            }, err2 =&gt; cb(err2 || err, ...args));
-        }
+                return this._queue.unshift(cb =&gt;
+                {
+                    this._db.run('ROLLBACK',
+                                 cb);
+                }, err2 =&gt; cb(err2 || err, ...args));
+            }
 &nbsp;
-        this._queue.unshift(cb =&gt;
-        {
-            this._db.run('END TRANSACTION',
-                         cb);
-        }, err =&gt; cb(err, ...args));
+            this._queue.unshift(cb =&gt;
+            {
+                this._db.run('END TRANSACTION',
+                             cb);
+            }, err =&gt; cb(err, ...args));
+        };
     }
         
     available(instance_id, cb)
@@ -580,7 +589,7 @@ class Atributo extends EventEmitter
                              instance_id,
                              cb);
             }
-        ], cb), this._end_transaction.bind(this, cb));
+        ], cb), this._end_transaction(cb));
     }
 &nbsp;
     unavailable(instance_id, destroyed, cb)
@@ -624,7 +633,7 @@ class Atributo extends EventEmitter
         }
 &nbsp;
         this._queue.push(cb =&gt; async.waterfall(statements, cb),
-                         this._end_transaction.bind(this, cb));
+                         this._end_transaction(cb));
     }
 &nbsp;
     has_jobs(instance_id, cb)
@@ -670,22 +679,22 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), iferr(this._end_transaction.bind(this, cb), r =&gt;
+        ], cb), iferr(this._end_transaction(cb), r =&gt;
         {
             if (r !== undefined)
             {
-                return this._end_transaction(cb, null, false, r.instance);
+                return this._end_transaction(cb)(null, false, r.instance);
             }
 &nbsp;
             this._queue.unshift(cb =&gt; 
             {
                 this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, iferr(this._end_transaction.bind(this, cb), r =&gt;
+            }, iferr(this._end_transaction(cb), r =&gt;
             {
                 if (r.length === 0)
                 {
-                    return this._end_transaction(cb, new Error('no instances'));
+                    return this._end_transaction(cb)(new Error('no instances'));
                 }
 &nbsp;
                 this._queue.unshift(cb =&gt;
@@ -694,11 +703,11 @@ class Atributo extends EventEmitter
                                            job_id,
                                            r.map(row =&gt; row.id),
                                            cb);
-                }, iferr(this._end_transaction.bind(this, cb), (allocate, instance_id) =&gt;
+                }, iferr(this._end_transaction(cb), (allocate, instance_id) =&gt;
                 {
                     if (!allocate)
                     {
-                        return this._end_transaction(cb, null, false, instance_id);
+                        return this._end_transaction(cb)(null, false, instance_id);
                     }
 &nbsp;
                     this._queue.unshift(cb =&gt;
@@ -707,9 +716,9 @@ class Atributo extends EventEmitter
                                      job_id,
                                      instance_id,
                                      cb);
-                    }, iferr(this._end_transaction.bind(this, cb), r =&gt;
+                    }, iferr(this._end_transaction(cb), r =&gt;
                     {
-                        this._end_transaction(cb, null, true, instance_id);
+                        this._end_transaction(cb)(null, true, instance_id);
                     }));
                 }));
             }));
@@ -742,7 +751,7 @@ exports.Atributo = Atributo;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Dec 19 2017 13:41:10 GMT+0000 (GMT)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Dec 19 2017 14:18:30 GMT+0000 (GMT)
 </div>
 </div>
 <script src="prettify.js"></script>

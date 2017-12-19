@@ -10,9 +10,9 @@ class Atributo extends EventEmitter
     {
         super();
 
-        this._db = new sqlite3.Database(options.db_filename);
-        this._db.on('error', this.emit.bind(this, 'error'));
-        this._db.on('open', this.emit.bind(this, 'ready'));
+        this._db = new sqlite3.Database(options.db_filename, options.db_mode);
+        this._db.on('error', err => this.emit('error', err));
+        this._db.on('open', () => this.emit('ready'));
 
         // We need to queue queries on a db connection:
         // https://github.com/mapbox/node-sqlite3/issues/304
@@ -28,22 +28,25 @@ class Atributo extends EventEmitter
         this._db.close(cb);
     }
 
-    _end_transaction(cb, err, ...args)
+    _end_transaction(cb)
     {
-        if (err)
+        return (err, ...args) =>
         {
-            return this._queue.unshift(cb =>
+            if (err)
             {
-                this._db.run('ROLLBACK',
-                             cb);
-            }, err2 => cb(err2 || err, ...args));
-        }
+                return this._queue.unshift(cb =>
+                {
+                    this._db.run('ROLLBACK',
+                                 cb);
+                }, err2 => cb(err2 || err, ...args));
+            }
 
-        this._queue.unshift(cb =>
-        {
-            this._db.run('END TRANSACTION',
-                         cb);
-        }, err => cb(err, ...args));
+            this._queue.unshift(cb =>
+            {
+                this._db.run('END TRANSACTION',
+                             cb);
+            }, err => cb(err, ...args));
+        };
     }
         
     available(instance_id, cb)
@@ -73,7 +76,7 @@ class Atributo extends EventEmitter
                              instance_id,
                              cb);
             }
-        ], cb), this._end_transaction.bind(this, cb));
+        ], cb), this._end_transaction(cb));
     }
 
     unavailable(instance_id, destroyed, cb)
@@ -117,7 +120,7 @@ class Atributo extends EventEmitter
         }
 
         this._queue.push(cb => async.waterfall(statements, cb),
-                         this._end_transaction.bind(this, cb));
+                         this._end_transaction(cb));
     }
 
     has_jobs(instance_id, cb)
@@ -163,22 +166,22 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), iferr(this._end_transaction.bind(this, cb), r =>
+        ], cb), iferr(this._end_transaction(cb), r =>
         {
             if (r !== undefined)
             {
-                return this._end_transaction(cb, null, false, r.instance);
+                return this._end_transaction(cb)(null, false, r.instance);
             }
 
             this._queue.unshift(cb => 
             {
                 this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, iferr(this._end_transaction.bind(this, cb), r =>
+            }, iferr(this._end_transaction(cb), r =>
             {
                 if (r.length === 0)
                 {
-                    return this._end_transaction(cb, new Error('no instances'));
+                    return this._end_transaction(cb)(new Error('no instances'));
                 }
 
                 this._queue.unshift(cb =>
@@ -187,11 +190,11 @@ class Atributo extends EventEmitter
                                            job_id,
                                            r.map(row => row.id),
                                            cb);
-                }, iferr(this._end_transaction.bind(this, cb), (allocate, instance_id) =>
+                }, iferr(this._end_transaction(cb), (allocate, instance_id) =>
                 {
                     if (!allocate)
                     {
-                        return this._end_transaction(cb, null, false, instance_id);
+                        return this._end_transaction(cb)(null, false, instance_id);
                     }
 
                     this._queue.unshift(cb =>
@@ -200,9 +203,9 @@ class Atributo extends EventEmitter
                                      job_id,
                                      instance_id,
                                      cb);
-                    }, iferr(this._end_transaction.bind(this, cb), r =>
+                    }, iferr(this._end_transaction(cb), r =>
                     {
-                        this._end_transaction(cb, null, true, instance_id);
+                        this._end_transaction(cb)(null, true, instance_id);
                     }));
                 }));
             }));
