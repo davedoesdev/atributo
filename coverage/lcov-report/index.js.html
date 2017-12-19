@@ -22,7 +22,7 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>71/71</span>
+        <span class='fraction'>83/83</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -32,12 +32,12 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>42/42</span>
+        <span class='fraction'>51/51</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>64/64</span>
+        <span class='fraction'>73/73</span>
       </div>
     </div>
   </div>
@@ -277,7 +277,46 @@
 232
 233
 234
-235</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -299,7 +338,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">95x</span>
+<span class="cline-any cline-yes">102x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -309,7 +348,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">71x</span>
+<span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -421,6 +460,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
@@ -431,6 +507,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -653,6 +731,43 @@ class Atributo extends EventEmitter
         ], cb), cb);
     }
 &nbsp;
+    jobs(instance_id, cb)
+    {
+        this._queue.push(cb =&gt; async.waterfall(
+        [
+            cb =&gt;
+            {
+                this._db.all('SELECT job from allocations WHERE instance = ?;',
+                             instance_id,
+                             cb);
+            },
+            (r, cb) =&gt;
+            {
+                cb(null, r.map(row =&gt; row.job));
+            }
+        ], cb), cb);
+    }
+&nbsp;
+    instances(cb)
+    {
+        this._queue.push(cb =&gt; async.waterfall(
+        [
+            cb =&gt;
+            {
+                this._db.all('SELECT * from instances;',
+                             cb);
+            },
+            (r, cb) =&gt;
+            {
+                for (let row of r)
+                {
+                    row.available = !!row.available;
+                }
+                cb(null, r);
+            }
+        ], cb), cb);
+    }
+&nbsp;
     allocate(job_id, options, cb)
     {
         if (typeof options === 'function')
@@ -665,6 +780,8 @@ class Atributo extends EventEmitter
         {
             allocator: Atributo.default_allocator
         }, options);
+&nbsp;
+        let end = this._end_transaction(cb);
 &nbsp;
         this._queue.push(cb =&gt; async.waterfall(
         [
@@ -679,22 +796,22 @@ class Atributo extends EventEmitter
                              job_id,
                              cb);
             }
-        ], cb), iferr(this._end_transaction(cb), r =&gt;
+        ], cb), iferr(end, r =&gt;
         {
             if (r !== undefined)
             {
-                return this._end_transaction(cb)(null, false, r.instance);
+                return end(null, false, r.instance);
             }
 &nbsp;
             this._queue.unshift(cb =&gt; 
             {
                 this._db.all('SELECT id FROM instances WHERE available = 1;',
                              cb);
-            }, iferr(this._end_transaction(cb), r =&gt;
+            }, iferr(end, r =&gt;
             {
                 if (r.length === 0)
                 {
-                    return this._end_transaction(cb)(new Error('no instances'));
+                    return end(new Error('no instances'));
                 }
 &nbsp;
                 this._queue.unshift(cb =&gt;
@@ -703,11 +820,11 @@ class Atributo extends EventEmitter
                                            job_id,
                                            r.map(row =&gt; row.id),
                                            cb);
-                }, iferr(this._end_transaction(cb), (allocate, instance_id) =&gt;
+                }, iferr(end, (allocate, instance_id) =&gt;
                 {
                     if (!allocate)
                     {
-                        return this._end_transaction(cb)(null, false, instance_id);
+                        return end(null, false, instance_id);
                     }
 &nbsp;
                     this._queue.unshift(cb =&gt;
@@ -716,9 +833,9 @@ class Atributo extends EventEmitter
                                      job_id,
                                      instance_id,
                                      cb);
-                    }, iferr(this._end_transaction(cb), r =&gt;
+                    }, iferr(end, r =&gt;
                     {
-                        this._end_transaction(cb)(null, true, instance_id);
+                        end(null, true, instance_id);
                     }));
                 }));
             }));
@@ -751,7 +868,7 @@ exports.Atributo = Atributo;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Dec 19 2017 14:18:30 GMT+0000 (GMT)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Dec 19 2017 22:54:14 GMT+0000 (GMT)
 </div>
 </div>
 <script src="prettify.js"></script>
