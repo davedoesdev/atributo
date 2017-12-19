@@ -293,6 +293,8 @@ describe('atributo', function ()
 
     // check coverage
     // custom allocator
+    // get jobs for an instance?
+    // multi-process stress test
 
     after(function (cb)
     {

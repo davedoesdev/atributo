@@ -46,7 +46,7 @@ module.exports = function (grunt)
             },
 
             cover_check: {
-                cmd: nyc_path + ' check coverage --statements 100 --branches 100 --functions 100 --lines 100'
+                cmd: nyc_path + ' check-coverage --statements 100 --branches 100 --functions 100 --lines 100'
             },
 
             coveralls: {
