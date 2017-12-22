@@ -55,11 +55,7 @@ class Atributo extends EventEmitter
         [
             cb =>
             {
-                // Avoid SQLITE_BUSY_SNAPSHOT errors by starting the transaction
-                // immediately so other transactions can't start. We can do this
-                // because we know in this case that we're definitely going to
-                // update the database.
-                this._db.run('BEGIN IMMEDIATE TRANSACTION',
+                this._db.run('BEGIN TRANSACTION',
                              cb);
             },
             cb =>
@@ -84,7 +80,7 @@ class Atributo extends EventEmitter
         let statements = [
             cb =>
             {
-                this._db.run('BEGIN IMMEDIATE TRANSACTION',
+                this._db.run('BEGIN TRANSACTION',
                              cb);
             },
             cb =>

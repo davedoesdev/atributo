@@ -23,7 +23,12 @@ module.exports = function (grunt)
         },
 
         mochaTest: {
-            src: 'test/*.js',
+            default: {
+                src: 'test/test.js'
+            },
+            stress: {
+                src: 'test/stress.js'
+            },
             options: {
                 bail: true
             }
@@ -62,7 +67,9 @@ module.exports = function (grunt)
 
     grunt.registerTask('lint', 'eslint');
     grunt.registerTask('test', ['copy:db',
-                                'mochaTest']);
+                                'mochaTest:default']);
+    grunt.registerTask('test-stress', ['copy:db',
+                                       'mochaTest:stress']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);

@@ -397,8 +397,6 @@ describe('atributo', function ()
         });
     });
 
-    // multi-process stress test
-
     after(function (cb)
     {
         ao.close(cb);
