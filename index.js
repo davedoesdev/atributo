@@ -10,7 +10,13 @@ class Atributo extends EventEmitter
     {
         super();
 
-        this._db = new sqlite3.Database(options.db_filename, options.db_mode);
+        this._options = Object.assign(
+        {
+            busy_wait: 1000
+        }, options);
+
+        this._db = new sqlite3.Database(this._options.db_filename,
+                                        this._options.db_mode);
         this._db.on('error', err => this.emit('error', err));
         this._db.on('open', () => this.emit('ready'));
 
@@ -48,6 +54,21 @@ class Atributo extends EventEmitter
             }, err => cb(err, ...args));
         };
     }
+
+    _retry(method, cb, ...method_args)
+    {
+        return (err, ...args) =>
+        {
+            if (err && (err.code === 'SQLITE_BUSY'))
+            {
+                return setTimeout(() =>
+                {
+                    method.call(this, ...method_args, cb);
+                }, this._options.busy_wait);
+            }
+            cb(err, ...args);
+        };
+    }
         
     available(instance_id, cb)
     {
@@ -72,7 +93,8 @@ class Atributo extends EventEmitter
                              instance_id,
                              cb);
             }
-        ], cb), this._end_transaction(cb));
+        ], cb),
+        this._end_transaction(this._retry(this.available, cb, instance_id)));
     }
 
     unavailable(instance_id, destroyed, cb)
@@ -115,8 +137,10 @@ class Atributo extends EventEmitter
             );
         }
 
-        this._queue.push(cb => async.waterfall(statements, cb),
-                         this._end_transaction(cb));
+        this._queue.push(
+            cb => async.waterfall(statements, cb),
+            this._end_transaction(
+                this._retry(this.unavailable, cb, instance_id, destroyed))); 
     }
 
     has_jobs(instance_id, cb)
@@ -133,7 +157,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r['count(*)'] > 0);
             }
-        ], cb), cb);
+        ], cb), this._retry(this.has_jobs, cb, instance_id));
     }
 
     jobs(instance_id, cb)
@@ -150,7 +174,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r.map(row => row.job));
             }
-        ], cb), cb);
+        ], cb), this._retry(this.jobs, cb, instance_id));
     }
 
     instances(cb)
@@ -170,7 +194,7 @@ class Atributo extends EventEmitter
                 }
                 cb(null, r);
             }
-        ], cb), cb);
+        ], cb), this._retry(this.instances, cb));
     }
 
     allocate(job_id, options, cb)
@@ -186,7 +210,8 @@ class Atributo extends EventEmitter
             allocator: Atributo.default_allocator
         }, options);
 
-        let end = this._end_transaction(cb);
+        let end = this._end_transaction(
+                this._retry(this.allocate, cb, job_id, options));
 
         this._queue.push(cb => async.waterfall(
         [
@@ -254,7 +279,7 @@ class Atributo extends EventEmitter
             this._db.run('DELETE FROM allocations WHERE job = ?;',
                          job_id,
                          cb);
-        }, cb);
+        }, this._retry(this.deallocate, cb, job_id));
     }
 }
 

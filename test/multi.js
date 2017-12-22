@@ -5,7 +5,7 @@ const path = require('path'),
       iferr = require('iferr'),
       num = 5;
 
-describe('stress', function ()
+describe('multi', function ()
 {
     it('many Atributos should be able to access the same database', function (cb)
     {
@@ -36,7 +36,7 @@ describe('stress', function ()
                     ao.allocate('marker' + i, iferr(cb, allocated =>
                     {
                         expect(allocated).to.be.true;
-                        cb();
+                        cb(null, ao);
                     }));
                 },
                 function (ao, cb)

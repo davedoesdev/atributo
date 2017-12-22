@@ -26,8 +26,8 @@ module.exports = function (grunt)
             default: {
                 src: 'test/test.js'
             },
-            stress: {
-                src: 'test/stress.js'
+            multi: {
+                src: 'test/multi.js'
             },
             options: {
                 bail: true
@@ -43,7 +43,7 @@ module.exports = function (grunt)
 
         exec: {
             cover: {
-                cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test"
+                cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test test-multi"
             },
 
             cover_report: {
@@ -68,8 +68,8 @@ module.exports = function (grunt)
     grunt.registerTask('lint', 'eslint');
     grunt.registerTask('test', ['copy:db',
                                 'mochaTest:default']);
-    grunt.registerTask('test-stress', ['copy:db',
-                                       'mochaTest:stress']);
+    grunt.registerTask('test-multi', ['copy:db',
+                                      'mochaTest:multi']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);
