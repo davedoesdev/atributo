@@ -12,7 +12,22 @@ class Atributo extends EventEmitter
 
         this._options = Object.assign(
         {
-            busy_wait: 1000
+            busy_wait: 1000,
+
+            busy_handler: (method, cb, ...method_args) =>
+            {
+                return (err, ...args) =>
+                {
+                    if (err && (err.code === 'SQLITE_BUSY'))
+                    {
+                        return setTimeout(() =>
+                        {
+                            method.call(this, ...method_args, cb);
+                        }, this._options.busy_wait);
+                    }
+                    cb(err, ...args);
+                };
+            }
         }, options);
 
         this._db = new sqlite3.Database(this._options.db_filename,
@@ -27,6 +42,8 @@ class Atributo extends EventEmitter
         // this if required (to achieve more parallelism) by
         // creating many Atributo objects.
         this._queue = async.queue((task, cb) => task(cb));
+
+        this._busy = this._options.busy_handler;
     }
 
     close(cb)
@@ -55,21 +72,6 @@ class Atributo extends EventEmitter
         };
     }
 
-    _retry(method, cb, ...method_args)
-    {
-        return (err, ...args) =>
-        {
-            if (err && (err.code === 'SQLITE_BUSY'))
-            {
-                return setTimeout(() =>
-                {
-                    method.call(this, ...method_args, cb);
-                }, this._options.busy_wait);
-            }
-            cb(err, ...args);
-        };
-    }
-        
     available(instance_id, cb)
     {
         this._queue.push(cb => async.waterfall(
@@ -94,7 +96,7 @@ class Atributo extends EventEmitter
                              cb);
             }
         ], cb),
-        this._end_transaction(this._retry(this.available, cb, instance_id)));
+        this._end_transaction(this._busy(this.available, cb, instance_id)));
     }
 
     unavailable(instance_id, destroyed, cb)
@@ -140,7 +142,7 @@ class Atributo extends EventEmitter
         this._queue.push(
             cb => async.waterfall(statements, cb),
             this._end_transaction(
-                this._retry(this.unavailable, cb, instance_id, destroyed))); 
+                this._busy(this.unavailable, cb, instance_id, destroyed))); 
     }
 
     has_jobs(instance_id, cb)
@@ -157,7 +159,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r['count(*)'] > 0);
             }
-        ], cb), this._retry(this.has_jobs, cb, instance_id));
+        ], cb), this._busy(this.has_jobs, cb, instance_id));
     }
 
     jobs(instance_id, cb)
@@ -174,7 +176,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r.map(row => row.job));
             }
-        ], cb), this._retry(this.jobs, cb, instance_id));
+        ], cb), this._busy(this.jobs, cb, instance_id));
     }
 
     instances(cb)
@@ -194,7 +196,7 @@ class Atributo extends EventEmitter
                 }
                 cb(null, r);
             }
-        ], cb), this._retry(this.instances, cb));
+        ], cb), this._busy(this.instances, cb));
     }
 
     allocate(job_id, options, cb)
@@ -211,7 +213,7 @@ class Atributo extends EventEmitter
         }, options);
 
         let end = this._end_transaction(
-                this._retry(this.allocate, cb, job_id, options));
+                this._busy(this.allocate, cb, job_id, options));
 
         this._queue.push(cb => async.waterfall(
         [
@@ -279,7 +281,7 @@ class Atributo extends EventEmitter
             this._db.run('DELETE FROM allocations WHERE job = ?;',
                          job_id,
                          cb);
-        }, this._retry(this.deallocate, cb, job_id));
+        }, this._busy(this.deallocate, cb, job_id));
     }
 }
 
