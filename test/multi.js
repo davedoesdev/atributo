@@ -3,15 +3,56 @@ const path = require('path'),
       expect = require('chai').expect,
       Atributo = require('..').Atributo,
       iferr = require('iferr'),
-      num = 5;
+      num_instances = 5,
+      num_allocations = 20,
+      allocations_limit = 20;
 
 describe('multi', function ()
 {
     it('many Atributos should be able to access the same database', function (cb)
     {
-        this.timeout(60 * 1000);
+        this.timeout(10 * 60 * 1000);
 
-        async.times(num, function (i, cb)
+        let timeout = {};
+
+        let made_unavailable = false;
+
+        let next = () =>
+        {
+            timeout.timeout = setTimeout(() =>
+            {
+                new Atributo(
+                {
+                    db_filename: path.join(__dirname, 'atributo.sqlite3')
+                })
+                .on('ready', function ()
+                {
+                    let instance = 'marker' + Math.floor(Math.random() * num_instances);
+                    this.unavailable(instance, false, () =>
+                    {
+                        made_unavailable = true;
+                        timeout.timeout = setTimeout(() =>
+                        {
+                            this.available(instance, () =>
+                            {
+                                this.close(next);
+                            });
+                        }, 500);
+                    });
+                })
+                .on('error', cb);
+            }, 1000);
+        };
+
+        let start = () =>
+        {
+            if (timeout.timeout === undefined)
+            {
+                next();
+            }
+        };
+
+        async.times(num_instances, function (i, cb)
         {
             async.waterfall(
             [
@@ -45,27 +86,52 @@ describe('multi', function ()
                 },
                 function (ao, cb)
                 {
-                    async.times(num, function (j, cb)
+                    async.times(num_instances, function (j, cb)
                     {
                         ao.allocate('marker' + j, iferr(cb, allocated =>
                         {
                             expect(allocated).to.be.false;
                             cb();
                         }));
-                    }, cb);
+                    }, err => cb(err, ao));
+                },
+                function (ao, cb)
+                {
+                    start();
+                    cb(null, ao);
+                },
+                function (ao, cb)
+                {
+                    async.timesLimit(num_allocations, allocations_limit, function (j, cb)
+                    {
+                        async.series(
+                        [
+                            cb =>
+                            {
+                                ao.allocate('allocation' + j, cb);
+                            },
+                            cb =>
+                            {
+                                setTimeout(cb, 10 * 1000);
+                            },
+                            cb =>
+                            {
+                                ao.deallocate('allocation' + j, cb);
+                            }
+
+                        ], cb);
+                    }, err => cb(err, ao));
                 }
             ], cb);
-//then do the random job generation etc
-        }, cb);
+        }, iferr(cb, () =>
+        {
+            expect(made_unavailable).to.be.true;
+            clearTimeout(timeout.timeout);
+            cb();
+        }));
     });
 });
 
+// need to test destroying too, including waiting for it to have no jobs
 // do single process first
 // spawn a number of processes all allocating jobs
-// we could also randomly make instances unavailable / destroy them
-// how do we ensure all used same db?
-// each process should have a prefix it adds to instances and jobs,
-// check there are some for each at end (make sure we don't remove all
-// instances and jobs)
-// just leave one created by each? have some way to see all are visbible
-// by the others?
