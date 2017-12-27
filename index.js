@@ -27,12 +27,18 @@ class Atributo extends EventEmitter
         {
             busy_wait: 1000,
 
-            busy_handler: (f, retry) =>
+            busy_handler: (f, retry, block) =>
             {
                 return (err, ...args) =>
                 {
                     if (err && (err.code === 'SQLITE_BUSY'))
                     {
+                        if (block)
+                        {
+                            return this._queue.unshift(cb => setTimeout(cb, this._options.busy_wait),
+                                                       retry);
+                        }
+
                         return setTimeout(retry, this._options.busy_wait);
                     }
 
@@ -73,7 +79,8 @@ class Atributo extends EventEmitter
                     this._db.run('ROLLBACK',
                                  once(cb));
                 }, this._busy(err2 => cb(err2 || err, ...args),
-                              () => f(err, ...args)));
+                              () => f(err, ...args),
+                              true));
             }
 
             this._queue.unshift(cb =>
@@ -81,7 +88,8 @@ class Atributo extends EventEmitter
                 this._db.run('END TRANSACTION',
                              once(cb));
             }, this._busy(err => cb(err, ...args),
-                          () => f(err, ...args)));
+                          () => f(err, ...args),
+                          true));
         };
 
         return f;
