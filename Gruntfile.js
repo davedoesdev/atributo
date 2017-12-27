@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path'),
       mod_path = path.join('.', 'node_modules'),
       bin_path = path.join(mod_path, '.bin'),

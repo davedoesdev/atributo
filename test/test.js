@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path'),
       async = require('async'),
       expect = require('chai').expect,

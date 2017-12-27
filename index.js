@@ -1,3 +1,5 @@
+'use strict';
+
 const crypto = require('crypto'),
       sqlite3 = require('sqlite3'),
       async = require('async'),
