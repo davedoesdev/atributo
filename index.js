@@ -4,6 +4,19 @@ const crypto = require('crypto'),
       iferr = require('iferr'),
       EventEmitter = require('events').EventEmitter;
 
+function once(f)
+{
+    let called = false;
+    return function(...args)
+    {
+        if (!called)
+        {
+            called = true;
+            return f.call(this, ...args);
+        }
+    };
+}
+
 class Atributo extends EventEmitter
 {
     constructor(options)
@@ -14,18 +27,16 @@ class Atributo extends EventEmitter
         {
             busy_wait: 1000,
 
-            busy_handler: (method, cb, ...method_args) =>
+            busy_handler: (f, retry) =>
             {
                 return (err, ...args) =>
                 {
                     if (err && (err.code === 'SQLITE_BUSY'))
                     {
-                        return setTimeout(() =>
-                        {
-                            method.call(this, ...method_args, cb);
-                        }, this._options.busy_wait);
+                        return setTimeout(retry, this._options.busy_wait);
                     }
-                    cb(err, ...args);
+
+                    f(err, ...args);
                 };
             }
         }, options);
@@ -53,96 +64,103 @@ class Atributo extends EventEmitter
 
     _end_transaction(cb)
     {
-        return (err, ...args) =>
+        let f = (err, ...args) =>
         {
             if (err)
             {
                 return this._queue.unshift(cb =>
                 {
                     this._db.run('ROLLBACK',
-                                 cb);
-                }, err2 => cb(err2 || err, ...args));
+                                 once(cb));
+                }, this._busy(err2 => cb(err2 || err, ...args),
+                              () => f(err, ...args)));
             }
 
             this._queue.unshift(cb =>
             {
                 this._db.run('END TRANSACTION',
-                             cb);
-            }, err => cb(err, ...args));
+                             once(cb));
+            }, this._busy(err => cb(err, ...args),
+                          () => f(err, ...args)));
         };
+
+        return f;
+    }
+
+    _in_transaction(cb, f)
+    {
+        this._queue.push(cb2 =>
+            this._db.run('BEGIN TRANSACTION', once(cb2)),
+            iferr(cb, () => f(this._end_transaction(cb))));
     }
 
     available(instance_id, cb)
     {
-        this._queue.push(cb => async.waterfall(
-        [
-            cb =>
-            {
-                this._db.run('BEGIN TRANSACTION',
-                             cb);
-            },
-            cb =>
-            {
-                this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 1);',
-                             instance_id,
-                             cb);
-            },
-            cb =>
-            {
-                // Do this in a transaction so we don't error if someone else
-                // deletes the row here.
-                this._db.run('UPDATE instances SET available = 1 WHERE id = ?;',
-                             instance_id,
-                             cb);
-            }
-        ], cb),
-        this._end_transaction(this._busy(this.available, cb, instance_id)));
+        let b = this._busy(cb, () => this.available(instance_id, cb));
+
+        this._in_transaction(b, cb =>
+        {
+            this._queue.unshift(cb => async.waterfall(
+            [
+                cb =>
+                {
+                    this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 1);',
+                                 instance_id,
+                                 once(cb));
+                },
+                cb =>
+                {
+                    // Do this in a transaction so we don't error if someone else
+                    // deletes the row here.
+                    this._db.run('UPDATE instances SET available = 1 WHERE id = ?;',
+                                 instance_id,
+                                 once(cb));
+                }
+            ], cb), cb);
+        });
     }
 
     unavailable(instance_id, destroyed, cb)
     {
-        let statements = [
-            cb =>
-            {
-                this._db.run('BEGIN TRANSACTION',
-                             cb);
-            },
-            cb =>
-            {
-                this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 0);',
-                             instance_id,
-                             cb);
-            },
-            cb =>
-            {
-                this._db.run('UPDATE instances SET available = 0 WHERE id = ?;',
-                             instance_id,
-                             cb);
-            }
-        ];
+        let b = this._busy(cb, () => this.unavailable(instance_id, destroyed, cb));
 
-        if (destroyed)
+        this._in_transaction(b, cb =>
         {
-            statements.push(
+            let statements = [
                 cb =>
                 {
-                    this._db.run('DELETE FROM allocations WHERE instance = ?;',
+                    this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 0);',
                                  instance_id,
-                                 cb);
+                                 once(cb));
                 },
                 cb =>
                 {
-                    this._db.run('DELETE FROM instances WHERE id = ?;',
+                    this._db.run('UPDATE instances SET available = 0 WHERE id = ?;',
                                  instance_id,
-                                 cb);
+                                 once(cb));
                 }
-            );
-        }
+            ];
 
-        this._queue.push(
-            cb => async.waterfall(statements, cb),
-            this._end_transaction(
-                this._busy(this.unavailable, cb, instance_id, destroyed))); 
+            if (destroyed)
+            {
+                statements.push(
+                    cb =>
+                    {
+                        this._db.run('DELETE FROM allocations WHERE instance = ?;',
+                                     instance_id,
+                                     once(cb));
+                    },
+                    cb =>
+                    {
+                        this._db.run('DELETE FROM instances WHERE id = ?;',
+                                     instance_id,
+                                     once(cb));
+                    }
+                );
+            }
+
+            this._queue.unshift(cb => async.waterfall(statements, cb), cb);
+        });
     }
 
     has_jobs(instance_id, cb)
@@ -159,7 +177,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r['count(*)'] > 0);
             }
-        ], cb), this._busy(this.has_jobs, cb, instance_id));
+        ], cb), this._busy(cb, () => this.has_jobs(instance_id, cb)));
     }
 
     jobs(instance_id, cb)
@@ -176,7 +194,7 @@ class Atributo extends EventEmitter
             {
                 cb(null, r.map(row => row.job));
             }
-        ], cb), this._busy(this.jobs, cb, instance_id));
+        ], cb), this._busy(cb, () => this.jobs(instance_id, cb)));
     }
 
     instances(cb)
@@ -196,7 +214,7 @@ class Atributo extends EventEmitter
                 }
                 cb(null, r);
             }
-        ], cb), this._busy(this.instances, cb));
+        ], cb), this._busy(cb, () => this.instances(cb)));
     }
 
     allocate(job_id, options, cb)
@@ -212,66 +230,60 @@ class Atributo extends EventEmitter
             allocator: Atributo.default_allocator
         }, options);
 
-        let end = this._end_transaction(
-                this._busy(this.allocate, cb, job_id, options));
+        let b = this._busy(cb, () => this.allocate(job_id, options, cb));
 
-        this._queue.push(cb => async.waterfall(
-        [
-            cb =>
-            {
-                this._db.run('BEGIN TRANSACTION',
-                             cb);
-            },
-            cb =>
+        this._in_transaction(b, cb =>
+        {
+            this._queue.unshift(cb => 
             {
                 this._db.get('SELECT instance FROM allocations WHERE job = ?;',
                              job_id,
                              cb);
-            }
-        ], cb), iferr(end, r =>
-        {
-            if (r !== undefined)
+            }, iferr(cb, r =>
             {
-                return end(null, false, r.instance);
-            }
-
-            this._queue.unshift(cb => 
-            {
-                this._db.all('SELECT id FROM instances WHERE available = 1;',
-                             cb);
-            }, iferr(end, r =>
-            {
-                if (r.length === 0)
+                if (r !== undefined)
                 {
-                    return end(new Error('no instances'));
+                    return cb(null, false, r.instance);
                 }
 
-                this._queue.unshift(cb =>
+                this._queue.unshift(cb => 
                 {
-                    options.allocator.call(this,
-                                           job_id,
-                                           r.map(row => row.id),
-                                           cb);
-                }, iferr(end, (allocate, instance_id) =>
+                    this._db.all('SELECT id FROM instances WHERE available = 1;',
+                                 cb);
+                }, iferr(cb, r =>
                 {
-                    if (!allocate)
+                    if (r.length === 0)
                     {
-                        return end(null, false, instance_id);
+                        return cb(new Error('no instances'));
                     }
 
                     this._queue.unshift(cb =>
                     {
-                        this._db.run('INSERT INTO allocations VALUES (?, ?);',
-                                     job_id,
-                                     instance_id,
-                                     cb);
-                    }, iferr(end, r =>
+                        options.allocator.call(this,
+                                               job_id,
+                                               r.map(row => row.id),
+                                               cb);
+                    }, iferr(cb, (allocate, instance_id) =>
                     {
-                        end(null, true, instance_id);
+                        if (!allocate)
+                        {
+                            return cb(null, false, instance_id);
+                        }
+
+                        this._queue.unshift(cb =>
+                        {
+                            this._db.run('INSERT INTO allocations VALUES (?, ?);',
+                                         job_id,
+                                         instance_id,
+                                         once(cb));
+                        }, iferr(cb, r =>
+                        {
+                            cb(null, true, instance_id);
+                        }));
                     }));
                 }));
             }));
-        }));
+        });
     }
 
     deallocate(job_id, cb)
@@ -280,8 +292,8 @@ class Atributo extends EventEmitter
         {
             this._db.run('DELETE FROM allocations WHERE job = ?;',
                          job_id,
-                         cb);
-        }, this._busy(this.deallocate, cb, job_id));
+                         once(cb));
+        }, this._busy(cb, () => this.deallocate(job_id, cb)));
     }
 }
 
