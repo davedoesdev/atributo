@@ -54,3 +54,15 @@ module.exports = function (num_allocations, allocations_limit)
     };
 };
 
+if (require.main === module)
+{
+    let [i, num_allocations, allocations_limit] = JSON.parse(Buffer.from(process.argv[2], 'hex'));
+    module.exports(num_allocations, allocations_limit)(i, err =>
+    {
+        if (err)
+        {
+            throw err;
+        }
+    });
+}
+

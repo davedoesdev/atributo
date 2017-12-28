@@ -58,3 +58,15 @@ module.exports = function (num_tasks)
         ], cb);
     };
 };
+
+if (require.main === module)
+{
+    let [i, num_tasks] = JSON.parse(Buffer.from(process.argv[2], 'hex'));
+    module.exports(num_tasks)(i, err =>
+    {
+        if (err)
+        {
+            throw err;
+        }
+    });
+}

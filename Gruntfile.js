@@ -28,8 +28,11 @@ module.exports = function (grunt)
             default: {
                 src: 'test/test.js'
             },
-            multi: {
-                src: 'test/multi.js'
+            multi_sp: {
+                src: 'test/multi_sp.js'
+            },
+            multi_mp: {
+                src: 'test/multi_mp.js'
             },
             options: {
                 bail: true
@@ -71,7 +74,9 @@ module.exports = function (grunt)
     grunt.registerTask('test', ['copy:db',
                                 'mochaTest:default']);
     grunt.registerTask('test-multi', ['copy:db',
-                                      'mochaTest:multi']);
+                                      'mochaTest:multi_sp',
+                                      'copy:db',
+                                      'mochaTest:multi_mp']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);
