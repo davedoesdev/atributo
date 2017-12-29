@@ -27,26 +27,7 @@ class Atributo extends EventEmitter
 
         this._options = Object.assign(
         {
-            busy_wait: 1000,
-
-            busy_handler: (f, retry, block) =>
-            {
-                return (err, ...args) =>
-                {
-                    if (err && (err.code === 'SQLITE_BUSY'))
-                    {
-                        if (block)
-                        {
-                            return this._queue.unshift(cb => setTimeout(cb, this._options.busy_wait),
-                                                       retry);
-                        }
-
-                        return setTimeout(retry, this._options.busy_wait);
-                    }
-
-                    f(err, ...args);
-                };
-            }
+            busy_wait: 1000
         }, options);
 
         this._db = new sqlite3.Database(this._options.db_filename,
@@ -61,8 +42,25 @@ class Atributo extends EventEmitter
         // this if required (to achieve more parallelism) by
         // creating many Atributo objects.
         this._queue = async.queue((task, cb) => task(cb));
+    }
 
-        this._busy = this._options.busy_handler;
+    _busy(f, retry, block)
+    {
+        return (err, ...args) =>
+        {
+            if (err && (err.code === 'SQLITE_BUSY'))
+            {
+                if (block)
+                {
+                    return this._queue.unshift(cb => setTimeout(cb, this._options.busy_wait),
+                                               retry);
+                }
+
+                return setTimeout(retry, this._options.busy_wait);
+            }
+
+            f(err, ...args);
+        };
     }
 
     close(cb)

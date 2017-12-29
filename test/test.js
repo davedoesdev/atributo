@@ -2,6 +2,7 @@
 
 const path = require('path'),
       async = require('async'),
+      iferr = require('iferr'),
       expect = require('chai').expect,
       sqlite3 = require('sqlite3'),
       Atributo = require('..').Atributo;
@@ -399,8 +400,93 @@ describe('atributo', function ()
         });
     });
 
+    it('should retry reads', function (cb)
+    {
+        this.timeout(5000);
+
+        class TestAtributo extends Atributo
+        {
+            constructor(options)
+            {
+                super(options);
+                this._busy_count = 0;
+            }
+
+            _busy(f, retry, block)
+            {
+                return (err, ...args) =>
+                {
+                    this._busy_count += 1;
+
+                    switch (this._busy_count)
+                    {
+                        case 1:
+                            expect(err.code).to.equal('SQLITE_BUSY');
+                            this.jobs('foo', iferr(cb, job_ids =>
+                            {
+                                expect(job_ids).to.eql(['bar', 'bar3', 'bar9']);
+                                retry();
+                            }));
+                            break;
+
+                        case 2:
+                            expect(err.code).to.equal('SQLITE_BUSY');
+                            this.has_jobs('foo', iferr(cb, v =>
+                            {
+                                expect(v).to.be.true;
+                                retry();
+                            }));
+                            break;
+
+                        case 3:
+                            expect(err.code).to.equal('SQLITE_BUSY');
+                            ao._db.run('END TRANSACTION', iferr(cb, retry));
+                            break;
+
+                        case 4:
+                        case 5:
+                        case 6:
+                            expect(err).to.equal(null);
+                            f(err, ...args);
+                            break;
+
+                        default:
+                            cb(new Error('called too many times'));
+                            break;
+                    }
+                };
+            }
+        }
+
+        new TestAtributo(
+        {
+            db_filename: path.join(__dirname, 'atributo.sqlite3')
+        }).on('ready', function ()
+        {
+            ao._db.run('BEGIN EXCLUSIVE TRANSACTION', iferr(cb, () =>
+            {
+                this.instances(iferr(cb, instances =>
+                {
+                    expect(this._busy_count).to.equal(6);
+                    expect(instances).to.eql(
+                    [
+                        { id: 'foo', available: true },
+                        { id: 'foo2', available: false },
+                        { id: 'foo3', available: true }
+                    ]);
+                    cb();
+                }));
+            }));
+        });
+    });
+
     after(function (cb)
     {
         ao.close(cb);
     });
 });
+
+// TODO:
+// fill in missing coverage. Take out exclusive lock and check retries
+// check once
+// https://github.com/mapbox/node-sqlite3/issues/923#issuecomment-354010833
