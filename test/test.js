@@ -540,6 +540,4 @@ describe('atributo', function ()
 });
 
 // TODO:
-// fill in missing coverage. Take out exclusive lock and check retries
-// check once
 // https://github.com/mapbox/node-sqlite3/issues/923#issuecomment-354010833

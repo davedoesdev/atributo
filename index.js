@@ -6,19 +6,6 @@ const crypto = require('crypto'),
       iferr = require('iferr'),
       EventEmitter = require('events').EventEmitter;
 
-function once(f)
-{
-    let called = false;
-    return function(...args)
-    {
-        if (!called)
-        {
-            called = true;
-            return f.call(this, ...args);
-        }
-    };
-}
-
 class Atributo extends EventEmitter
 {
     constructor(options)
@@ -77,7 +64,7 @@ class Atributo extends EventEmitter
                 return this._queue.unshift(cb =>
                 {
                     this._db.run('ROLLBACK',
-                                 once(cb));
+                                 cb);
                 }, this._busy(err2 => cb(err2 || err, ...args),
                               () => f(err, ...args),
                               true));
@@ -86,7 +73,7 @@ class Atributo extends EventEmitter
             this._queue.unshift(cb =>
             {
                 this._db.run('END TRANSACTION',
-                             once(cb));
+                             cb);
             }, this._busy(err => cb(err, ...args),
                           () => f(err, ...args),
                           true));
@@ -98,7 +85,7 @@ class Atributo extends EventEmitter
     _in_transaction(cb, f)
     {
         this._queue.push(cb2 =>
-            this._db.run('BEGIN TRANSACTION', once(cb2)),
+            this._db.run('BEGIN TRANSACTION', cb2),
             iferr(cb, () => f(this._end_transaction(cb))));
     }
 
@@ -114,7 +101,7 @@ class Atributo extends EventEmitter
                 {
                     this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 1);',
                                  instance_id,
-                                 once(cb));
+                                 cb);
                 },
                 cb =>
                 {
@@ -122,7 +109,7 @@ class Atributo extends EventEmitter
                     // deletes the row here.
                     this._db.run('UPDATE instances SET available = 1 WHERE id = ?;',
                                  instance_id,
-                                 once(cb));
+                                 cb);
                 }
             ], cb), cb);
         });
@@ -139,13 +126,13 @@ class Atributo extends EventEmitter
                 {
                     this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 0);',
                                  instance_id,
-                                 once(cb));
+                                 cb);
                 },
                 cb =>
                 {
                     this._db.run('UPDATE instances SET available = 0 WHERE id = ?;',
                                  instance_id,
-                                 once(cb));
+                                 cb);
                 }
             ];
 
@@ -156,13 +143,13 @@ class Atributo extends EventEmitter
                     {
                         this._db.run('DELETE FROM allocations WHERE instance = ?;',
                                      instance_id,
-                                     once(cb));
+                                     cb);
                     },
                     cb =>
                     {
                         this._db.run('DELETE FROM instances WHERE id = ?;',
                                      instance_id,
-                                     once(cb));
+                                     cb);
                     }
                 );
             }
@@ -283,7 +270,7 @@ class Atributo extends EventEmitter
                             this._db.run('INSERT INTO allocations VALUES (?, ?);',
                                          job_id,
                                          instance_id,
-                                         once(cb));
+                                         cb);
                         }, iferr(cb, r =>
                         {
                             cb(null, true, instance_id);
@@ -300,7 +287,7 @@ class Atributo extends EventEmitter
         {
             this._db.run('DELETE FROM allocations WHERE job = ?;',
                          job_id,
-                         once(cb));
+                         cb);
         }, this._busy(cb, () => this.deallocate(job_id, cb)));
     }
 }
