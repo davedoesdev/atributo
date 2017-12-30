@@ -317,17 +317,22 @@ describe('atributo', function ()
 
     it('should support a custom allocator', function (cb)
     {
-        let called = false;
-
         ao.available('foo3', function (err)
         {
             if (err) { return cb(err); }
-            ao.allocate('bar11',
+
+            class TestAtributo extends Atributo
             {
-                allocator: function (job_id, instance_ids, cb)
+                constructor(options)
                 {
-                    called = true;
-                    Atributo.default_allocator(job_id, instance_ids, function (err, allocated, instance_id)
+                    super(options);
+                    this._test_allocate_called = false;
+                }
+
+                _allocate(job_id, instance_ids, cb)
+                {
+                    this._test_allocate_called = true;
+                    super._allocate(job_id, instance_ids, function (err, allocated, instance_id)
                     {
                         if (err) { return cb(err); }
                         expect(allocated).to.be.true;
@@ -335,16 +340,24 @@ describe('atributo', function ()
                         cb(null, false, instance_id);
                     });
                 }
-            }, function (err, allocated, instance_id)
+            }
+
+            new TestAtributo(
             {
-                expect(called).to.be.true;
-                expect(allocated).to.be.false;
-                expect(instance_id).to.equal('foo3');
-                ao.has_jobs('foo3', function (err, v)
+                db_filename: path.join(__dirname, 'atributo.sqlite3')
+            }).on('ready', function ()
+            {
+                this.allocate('bar11', (err, allocated, instance_id) =>
                 {
-                    if (err) { return cb(err); }
-                    expect(v).to.be.false;
-                    cb();
+                    expect(this._test_allocate_called).to.be.true;
+                    expect(allocated).to.be.false;
+                    expect(instance_id).to.equal('foo3');
+                    ao.has_jobs('foo3', (err, v) =>
+                    {
+                        if (err) { return cb(err); }
+                        expect(v).to.be.false;
+                        cb();
+                    });
                 });
             });
         });
@@ -387,13 +400,13 @@ describe('atributo', function ()
 
     it('should error if db errors', function (cb)
     {
-        let ao = new Atributo(
+        let ao2 = new Atributo(
         {
             db_filename: path.join(__dirname, 'does_not_exist.sqlite3'),
             db_mode: sqlite3.OPEN_READONLY
         });
 
-        ao.on('error', function (err)
+        ao2.on('error', function (err)
         {
             expect(err.message).to.equal('SQLITE_CANTOPEN: unable to open database file');
             cb();
@@ -474,7 +487,7 @@ describe('atributo', function ()
                         { id: 'foo2', available: false },
                         { id: 'foo3', available: true }
                     ]);
-                    cb();
+                    this.close(cb);
                 }));
             }));
         });
@@ -528,7 +541,7 @@ describe('atributo', function ()
             {
                 expect(err.message).to.equal('SQLITE_ERROR: cannot rollback - no transaction is active');
                 expect(err.code).to.equal('SQLITE_ERROR');
-                cb();
+                this.close(cb);
             })(new Error('dummy error'));
         });
     });
@@ -538,6 +551,3 @@ describe('atributo', function ()
         ao.close(cb);
     });
 });
-
-// TODO:
-// https://github.com/mapbox/node-sqlite3/issues/923#issuecomment-354010833
