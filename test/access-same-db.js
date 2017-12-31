@@ -30,9 +30,9 @@ module.exports = function (num_tasks)
             },
             function (ao, cb)
             {
-                ao.allocate('marker' + i, iferr(cb, allocated =>
+                ao.allocate('marker' + i, iferr(cb, persisted =>
                 {
-                    expect(allocated).to.be.true;
+                    expect(persisted).to.be.true;
                     cb(null, ao);
                 }));
             },
@@ -44,9 +44,9 @@ module.exports = function (num_tasks)
             {
                 async.times(num_tasks, function (j, cb)
                 {
-                    ao.allocate('marker' + j, iferr(cb, allocated =>
+                    ao.allocate('marker' + j, iferr(cb, persisted =>
                     {
-                        expect(allocated).to.be.false;
+                        expect(persisted).to.be.false;
                         cb();
                     }));
                 }, err => cb(err, ao));

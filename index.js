@@ -86,6 +86,7 @@ class Atributo extends EventEmitter
 
      @param {string} instance_id - ID of the instance.
      @param {boolean} destroyed - If false, the instance won't be allocated any more jobs. If true, it is also removed from the database along with its existing job allocations.
+     @param {unavailableCallback} cb - Called once the instance has been made unavailable.
      */
     unavailable(instance_id, destroyed, cb)
     {
@@ -130,6 +131,11 @@ class Atributo extends EventEmitter
         });
     }
 
+    /**
+     Get a list of instance IDs along with their availability.
+
+     @param {instancesCallback} cb - Called with the list of instances.
+     */
     instances(cb)
     {
         this._queue.push(cb => async.waterfall(
@@ -150,6 +156,12 @@ class Atributo extends EventEmitter
         ], cb), this._busy(cb, () => this.instances(cb)));
     }
 
+    /**
+     Allocate a job to an instance.
+
+     @param {string} job_id - ID of the job to allocate.
+     @param {allocateCallback} cb - Called with the ID of the instance to which the job was allocated, and whether the allocation was persisted to the database.
+     */
     allocate(job_id, cb)
     {
         let b = this._busy(cb, () => this.allocate(job_id, cb));
@@ -182,9 +194,9 @@ class Atributo extends EventEmitter
                     this._queue.unshift(cb =>
                     {
                         this._allocate(job_id, r.map(row => row.id), cb);
-                    }, iferr(cb, (allocate, instance_id) =>
+                    }, iferr(cb, (persist, instance_id) =>
                     {
-                        if (!allocate)
+                        if (!persist)
                         {
                             return cb(null, false, instance_id);
                         }
@@ -205,6 +217,12 @@ class Atributo extends EventEmitter
         });
     }
 
+    /**
+     Remove a job allocation.
+
+     @param {string} job_id - ID of job to deallocate. If the job is allocated to an instance in the database, the allocation will be removed.
+     @param {deallocateCallback} cb - Called when the allocation has been removed.
+     */
     deallocate(job_id, cb)
     {
         this._queue.push(cb =>
@@ -215,6 +233,12 @@ class Atributo extends EventEmitter
         }, this._busy(cb, () => this.deallocate(job_id, cb)));
     }
 
+    /**
+      Get when an instance has jobs allocated to it.
+
+      @param {string} instance_id - ID of the instance.
+      @param {has_jobsCallback} cb - Receives whether there are jobs allocated to to the instance.
+     */
     has_jobs(instance_id, cb)
     {
         this._queue.push(cb => async.waterfall(
@@ -232,6 +256,12 @@ class Atributo extends EventEmitter
         ], cb), this._busy(cb, () => this.has_jobs(instance_id, cb)));
     }
 
+    /**
+     Gets the jobs allocated to an instance.
+
+     @param {string} instance_id - ID of the instance.
+     @param {jobsCallback} cb - Called with a list of job IDs allocated to the instance.
+     */
     jobs(instance_id, cb)
     {
         this._queue.push(cb => async.waterfall(
@@ -317,3 +347,8 @@ exports.Atributo = Atributo;
 // ready event
 // closeCallback
 // availableCallback
+// unavailableCallback
+// instancesCallback
+// allocateCallback
+// deallocateCallback
+// has_jobsCallback

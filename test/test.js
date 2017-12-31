@@ -46,10 +46,10 @@ describe('atributo', function ()
 
     it('should allocate to instance', function (cb)
     {
-        ao.allocate('bar', function (err, allocated, instance_id)
+        ao.allocate('bar', function (err, persisted, instance_id)
         {
             if (err) { return cb(err); }
-            expect(allocated).to.be.true;
+            expect(persisted).to.be.true;
             expect(instance_id).to.equal('foo');
             cb();
         });
@@ -63,10 +63,10 @@ describe('atributo', function ()
     it('should allocate to different instance', function (cb)
     {
         // bar2 just happens to hash to new instance
-        ao.allocate('bar2', function (err, allocated, instance_id)
+        ao.allocate('bar2', function (err, persisted, instance_id)
         {
             if (err) { return cb(err); }
-            expect(allocated).to.be.true;
+            expect(persisted).to.be.true;
             expect(instance_id).to.equal('foo2');
             cb();
         });
@@ -78,20 +78,20 @@ describe('atributo', function ()
         [
             cb =>
             {
-                ao.allocate('bar5', function (err, allocated, instance_id)
+                ao.allocate('bar5', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.true;
+                    expect(persisted).to.be.true;
                     expect(instance_id).to.equal('foo2');
                     cb();
                 });
             },
             cb =>
             {
-                ao.allocate('bar3', function (err, allocated, instance_id)
+                ao.allocate('bar3', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.true;
+                    expect(persisted).to.be.true;
                     expect(instance_id).to.equal('foo');
                     cb();
                 });
@@ -110,40 +110,40 @@ describe('atributo', function ()
         [
             cb =>
             {
-                ao.allocate('bar', function (err, allocated, instance_id)
+                ao.allocate('bar', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.false;
+                    expect(persisted).to.be.false;
                     expect(instance_id).to.equal('foo');
                     cb();
                 });
             },
             cb =>
             {
-                ao.allocate('bar2', function (err, allocated, instance_id)
+                ao.allocate('bar2', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.false;
+                    expect(persisted).to.be.false;
                     expect(instance_id).to.equal('foo2');
                     cb();
                 });
             },
             cb =>
             {
-                ao.allocate('bar5', function (err, allocated, instance_id)
+                ao.allocate('bar5', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.false;
+                    expect(persisted).to.be.false;
                     expect(instance_id).to.equal('foo2');
                     cb();
                 });
             },
             cb =>
             {
-                ao.allocate('bar3', function (err, allocated, instance_id)
+                ao.allocate('bar3', function (err, persisted, instance_id)
                 {
                     if (err) { return cb(err); }
-                    expect(allocated).to.be.false;
+                    expect(persisted).to.be.false;
                     expect(instance_id).to.equal('foo');
                     cb();
                 });
@@ -230,20 +230,20 @@ describe('atributo', function ()
                         ao.deallocate('bar4', function (err)
                         {
                             if (err) { return cb(err); }
-                            ao.allocate('bar5', function (err, allocated, instance_id)
+                            ao.allocate('bar5', function (err, persisted, instance_id)
                             {
                                 if (err) { return cb(err); }
-                                expect(allocated).to.be.true;
+                                expect(persisted).to.be.true;
                                 expect(instance_id).to.equal('foo3');
-                                ao.allocate('bar2', function (err, allocated, instance_id)
+                                ao.allocate('bar2', function (err, persisted, instance_id)
                                 {
                                     if (err) { return cb(err); }
-                                    expect(allocated).to.be.true;
+                                    expect(persisted).to.be.true;
                                     expect(instance_id).to.equal('foo3');
-                                    ao.allocate('bar9', function (err, allocated, instance_id)
+                                    ao.allocate('bar9', function (err, persisted, instance_id)
                                     {
                                         if (err) { return cb(err); }
-                                        expect(allocated).to.be.true;
+                                        expect(persisted).to.be.true;
                                         expect(instance_id).to.equal('foo2');
                                         cb();
                                     });
@@ -269,18 +269,18 @@ describe('atributo', function ()
                 {
                     if (err) { return cb(err); }
                     expect(v).to.be.true;
-                    ao.allocate('bar9', function (err, allocated, instance_id)
+                    ao.allocate('bar9', function (err, persisted, instance_id)
                     {
                         if (err) { return cb(err); }
-                        expect(allocated).to.be.false;
+                        expect(persisted).to.be.false;
                         expect(instance_id).to.equal('foo2');
                         ao.deallocate('bar9', function (err)
                         {
                             if (err) { return cb(err); }
-                            ao.allocate('bar9', function (err, allocated, instance_id)
+                            ao.allocate('bar9', function (err, persisted, instance_id)
                             {
                                 if (err) { return cb(err); }
-                                expect(allocated).to.be.true;
+                                expect(persisted).to.be.true;
                                 expect(instance_id).to.equal('foo3');
                                 cb();
                             });
@@ -303,10 +303,10 @@ describe('atributo', function ()
                 {
                     if (err) { return cb(err); }
                     expect(v).to.be.false;
-                    ao.allocate('bar9', function (err, allocated, instance_id)
+                    ao.allocate('bar9', function (err, persisted, instance_id)
                     {
                         if (err) { return cb(err); }
-                        expect(allocated).to.be.true;
+                        expect(persisted).to.be.true;
                         expect(instance_id).to.equal('foo');
                         cb();
                     });
@@ -332,10 +332,10 @@ describe('atributo', function ()
                 _allocate(job_id, instance_ids, cb)
                 {
                     this._test_allocate_called = true;
-                    super._allocate(job_id, instance_ids, function (err, allocated, instance_id)
+                    super._allocate(job_id, instance_ids, function (err, persisted, instance_id)
                     {
                         if (err) { return cb(err); }
-                        expect(allocated).to.be.true;
+                        expect(persisted).to.be.true;
                         expect(instance_id).to.equal('foo3');
                         cb(null, false, instance_id);
                     });
@@ -347,10 +347,10 @@ describe('atributo', function ()
                 db_filename: path.join(__dirname, 'atributo.sqlite3')
             }).on('ready', function ()
             {
-                this.allocate('bar11', (err, allocated, instance_id) =>
+                this.allocate('bar11', (err, persisted, instance_id) =>
                 {
                     expect(this._test_allocate_called).to.be.true;
-                    expect(allocated).to.be.false;
+                    expect(persisted).to.be.false;
                     expect(instance_id).to.equal('foo3');
                     ao.has_jobs('foo3', (err, v) =>
                     {
