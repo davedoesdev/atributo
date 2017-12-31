@@ -61,6 +61,14 @@ module.exports = function (grunt)
 
             coveralls: {
                 cmd: 'cat coverage/lcov.info | ./node_modules/.bin/coveralls'
+            },
+
+            documentation: {
+                cmd: './node_modules/.bin/documentation build -f html -o docs index.js'
+            },
+
+            serve_documentation: {
+                cmd: './node_modules/.bin/documentation serve -w index.js'
             }
         }
     });
@@ -81,5 +89,7 @@ module.exports = function (grunt)
                                     'exec:cover_report',
                                     'exec:cover_check']);
     grunt.registerTask('coveralls', 'exec:coveralls');
+    grunt.registerTask('docs', 'exec:documentation');
+    grunt.registerTask('serve_docs', 'exec:serve_documentation');
     grunt.registerTask('default', ['lint', 'test']);
 };

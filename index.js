@@ -6,6 +6,14 @@ const crypto = require('crypto'),
       iferr = require('iferr'),
       EventEmitter = require('events').EventEmitter;
 
+/**
+ Creates an object which allocates jobs across a number of instances.
+
+ @param {Object} options - Configuration options.
+ @param {string} options.db_filename - Filenames in which to store the allocations. You can use the same file in multiple `Atributo` objects, even across different processes. They will all make and see the same allocations.
+ @param {integer} [options.db_mode] - Mode to open the file in. See the [sqlite3](https://github.com/mapbox/node-sqlite3/wiki/API#new-sqlite3databasefilename-mode-callback) documentation.
+ @param {integer} [options.busy_wait=1000] - Number of milliseconds to wait before retrying if another `Atributo` object has the database file locked.
+ */
 class Atributo extends EventEmitter
 {
     constructor(options)
@@ -31,11 +39,22 @@ class Atributo extends EventEmitter
         this._queue = async.queue((task, cb) => task(cb));
     }
 
+    /**
+     Close the database file. Subsequent operations will fail.
+
+     @param {closeCallback} cb - Called once the database is closed.
+     */
     close(cb)
     {
         this._db.close(cb);
     }
 
+    /**
+     Make an instance available for job allocation.
+
+     @param {string} instance_id - ID of the instance.
+     @param {availableCallback} cb - Called once the instance has been made available.
+     */
     available(instance_id, cb)
     {
         let b = this._busy(cb, () => this.available(instance_id, cb));
@@ -62,6 +81,12 @@ class Atributo extends EventEmitter
         });
     }
 
+    /**
+     Make an instance unavailable for job allocation.
+
+     @param {string} instance_id - ID of the instance.
+     @param {boolean} destroyed - If false, the instance won't be allocated any more jobs. If true, it is also removed from the database along with its existing job allocations.
+     */
     unavailable(instance_id, destroyed, cb)
     {
         let b = this._busy(cb, () => this.unavailable(instance_id, destroyed, cb));
@@ -103,40 +128,6 @@ class Atributo extends EventEmitter
 
             this._queue.unshift(cb => async.waterfall(statements, cb), cb);
         });
-    }
-
-    has_jobs(instance_id, cb)
-    {
-        this._queue.push(cb => async.waterfall(
-        [
-            cb =>
-            {
-                this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
-                             instance_id,
-                             cb);
-            },
-            (r, cb) =>
-            {
-                cb(null, r['count(*)'] > 0);
-            }
-        ], cb), this._busy(cb, () => this.has_jobs(instance_id, cb)));
-    }
-
-    jobs(instance_id, cb)
-    {
-        this._queue.push(cb => async.waterfall(
-        [
-            cb =>
-            {
-                this._db.all('SELECT job from allocations WHERE instance = ?;',
-                             instance_id,
-                             cb);
-            },
-            (r, cb) =>
-            {
-                cb(null, r.map(row => row.job));
-            }
-        ], cb), this._busy(cb, () => this.jobs(instance_id, cb)));
     }
 
     instances(cb)
@@ -224,6 +215,40 @@ class Atributo extends EventEmitter
         }, this._busy(cb, () => this.deallocate(job_id, cb)));
     }
 
+    has_jobs(instance_id, cb)
+    {
+        this._queue.push(cb => async.waterfall(
+        [
+            cb =>
+            {
+                this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
+                             instance_id,
+                             cb);
+            },
+            (r, cb) =>
+            {
+                cb(null, r['count(*)'] > 0);
+            }
+        ], cb), this._busy(cb, () => this.has_jobs(instance_id, cb)));
+    }
+
+    jobs(instance_id, cb)
+    {
+        this._queue.push(cb => async.waterfall(
+        [
+            cb =>
+            {
+                this._db.all('SELECT job from allocations WHERE instance = ?;',
+                             instance_id,
+                             cb);
+            },
+            (r, cb) =>
+            {
+                cb(null, r.map(row => row.job));
+            }
+        ], cb), this._busy(cb, () => this.jobs(instance_id, cb)));
+    }
+
     _end_transaction(cb)
     {
         let f = (err, ...args) =>
@@ -287,3 +312,8 @@ class Atributo extends EventEmitter
 }
 
 exports.Atributo = Atributo;
+
+// TODO:
+// ready event
+// closeCallback
+// availableCallback
