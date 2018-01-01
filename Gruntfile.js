@@ -21,7 +21,7 @@ module.exports = function (grunt)
     grunt.initConfig(
     {
         eslint: {
-            target: [ 'index.js', 'test/**/*.js' ]
+            target: [ 'index.js', 'doc-extra.js', 'test/**/*.js' ]
         },
 
         mochaTest: {
@@ -64,11 +64,11 @@ module.exports = function (grunt)
             },
 
             documentation: {
-                cmd: './node_modules/.bin/documentation build -f html -o docs index.js'
+                cmd: './node_modules/.bin/documentation build -c documentation.yml -f html -o docs index.js doc-extra.js'
             },
 
             serve_documentation: {
-                cmd: './node_modules/.bin/documentation serve -w index.js'
+                cmd: './node_modules/.bin/documentation serve -w -c documentation.yml index.js doc-extra.js'
             }
         }
     });

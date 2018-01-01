@@ -85,11 +85,118 @@
                         #jobs
                       </a></li>
                       
+                      <li><a
+                        href='#atributo_allocate'
+                        class='regular pre-open'>
+                        #_allocate
+                      </a></li>
+                      
                     </ul>
                   
                   
                   
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'>Events</li>
+                      
+                        <li><a
+                          href='#atributoeventready'
+                          class='regular pre-open'>
+                          ⓔ ready
+                        </a></li>
+                      
+                    </ul>
+                  
                 </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#closecallback'
+                  class="">
+                  closeCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#availablecallback'
+                  class="">
+                  availableCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#unavailablecallback'
+                  class="">
+                  unavailableCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#instancescallback'
+                  class="">
+                  instancesCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#allocatecallback'
+                  class="">
+                  allocateCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#deallocatecallback'
+                  class="">
+                  deallocateCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#has_jobscallback'
+                  class="">
+                  has_jobsCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#jobscallback'
+                  class="">
+                  jobsCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#_allocatecallback'
+                  class="">
+                  _allocateCallback
+                  
+                </a>
                 
                 </li>
               
@@ -233,7 +340,7 @@
   <p>Close the database file. Subsequent operations will fail.</p>
 
 
-  <div class='pre p1 fill-light mt0'>close(cb: closeCallback)</div>
+  <div class='pre p1 fill-light mt0'>close(cb: <a href="#closecallback">closeCallback</a>)</div>
   
   
 
@@ -250,7 +357,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(closeCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#closecallback">closeCallback</a>)</code>
 	    Called once the database is closed.
 
           </div>
@@ -293,7 +400,7 @@
   <p>Make an instance available for job allocation.</p>
 
 
-  <div class='pre p1 fill-light mt0'>available(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: availableCallback)</div>
+  <div class='pre p1 fill-light mt0'>available(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#availablecallback">availableCallback</a>)</div>
   
   
 
@@ -319,7 +426,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(availableCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#availablecallback">availableCallback</a>)</code>
 	    Called once the instance has been made available.
 
           </div>
@@ -362,7 +469,7 @@
   <p>Make an instance unavailable for job allocation.</p>
 
 
-  <div class='pre p1 fill-light mt0'>unavailable(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, destroyed: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, cb: unavailableCallback)</div>
+  <div class='pre p1 fill-light mt0'>unavailable(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, destroyed: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, cb: <a href="#unavailablecallback">unavailableCallback</a>)</div>
   
   
 
@@ -397,7 +504,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(unavailableCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#unavailablecallback">unavailableCallback</a>)</code>
 	    Called once the instance has been made unavailable.
 
           </div>
@@ -440,7 +547,7 @@
   <p>Get a list of instance IDs along with their availability.</p>
 
 
-  <div class='pre p1 fill-light mt0'>instances(cb: instancesCallback)</div>
+  <div class='pre p1 fill-light mt0'>instances(cb: <a href="#instancescallback">instancesCallback</a>)</div>
   
   
 
@@ -457,7 +564,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(instancesCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#instancescallback">instancesCallback</a>)</code>
 	    Called with the list of instances.
 
           </div>
@@ -500,7 +607,7 @@
   <p>Allocate a job to an instance.</p>
 
 
-  <div class='pre p1 fill-light mt0'>allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: allocateCallback)</div>
+  <div class='pre p1 fill-light mt0'>allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#allocatecallback">allocateCallback</a>)</div>
   
   
 
@@ -526,8 +633,12 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(allocateCallback)</code>
-	    Called with the ID of the instance to which the job was allocated, and whether the allocation was persisted to the database.
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#allocatecallback">allocateCallback</a>)</code>
+	    Called with the ID of the instance to which the job was allocated, and whether the allocation was persisted to the database. The default allocator chooses the instance based on a hash of 
+<code>job_id</code>
+. You can override the 
+<a href="#atributo_allocate"><code>_allocate</code></a>
+ function to provide a different allocator.
 
           </div>
           
@@ -569,7 +680,7 @@
   <p>Remove a job allocation.</p>
 
 
-  <div class='pre p1 fill-light mt0'>deallocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: deallocateCallback)</div>
+  <div class='pre p1 fill-light mt0'>deallocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#deallocatecallback">deallocateCallback</a>)</div>
   
   
 
@@ -595,7 +706,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(deallocateCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#deallocatecallback">deallocateCallback</a>)</code>
 	    Called when the allocation has been removed.
 
           </div>
@@ -635,10 +746,10 @@
 
   
 
-  <p>Get when an instance has jobs allocated to it.</p>
+  <p>Get whether an instance has jobs allocated to it.</p>
 
 
-  <div class='pre p1 fill-light mt0'>has_jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: has_jobsCallback)</div>
+  <div class='pre p1 fill-light mt0'>has_jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#has_jobscallback">has_jobsCallback</a>)</div>
   
   
 
@@ -664,7 +775,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(has_jobsCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#has_jobscallback">has_jobsCallback</a>)</code>
 	    Receives whether there are jobs allocated to to the instance.
 
           </div>
@@ -707,7 +818,7 @@
   <p>Gets the jobs allocated to an instance.</p>
 
 
-  <div class='pre p1 fill-light mt0'>jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: jobsCallback)</div>
+  <div class='pre p1 fill-light mt0'>jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#jobscallback">jobsCallback</a>)</div>
   
   
 
@@ -733,7 +844,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(jobsCallback)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#jobscallback">jobsCallback</a>)</code>
 	    Called with a list of job IDs allocated to the instance.
 
           </div>
@@ -761,7 +872,798 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='atributo_allocate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_allocate(job_id, instance_ids, cb)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>The default job allocator algorithm. <code>job_id</code> is hashed, treated as an
+integer and used as an index in the array of available instances.
+Override this method to provide a different algorithm.</p>
+
+
+  <div class='pre p1 fill-light mt0'>_allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, instance_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, cb: <a href="#_allocatecallback">_allocateCallback</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>job_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    ID of the job to allocate.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>instance_ids</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    IDs of available instances.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#_allocatecallback">_allocateCallback</a>)</code>
+	    Your allocator method should call this once it's decided to which instance the job should be allocated.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Events</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='atributoeventready'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>ready</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Ready event. Emitted when the <code>Atributo</code> object has opened the database file.</p>
+
+
+  <div class='pre p1 fill-light mt0'>ready</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='closecallback'>
+      closeCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for closing the database file.</p>
+
+
+  <div class='pre p1 fill-light mt0'>closeCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='availablecallback'>
+      availableCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for making an instance available.</p>
+
+
+  <div class='pre p1 fill-light mt0'>availableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='unavailablecallback'>
+      unavailableCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for making an instance unavailable.</p>
+
+
+  <div class='pre p1 fill-light mt0'>unavailableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='instancescallback'>
+      instancesCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for listing instances.</p>
+
+
+  <div class='pre p1 fill-light mt0'>instancesCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instances: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>>)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>instances</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>>)</code>
+	    Map of instance ID to availability.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='allocatecallback'>
+      allocateCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for job allocation.</p>
+
+
+  <div class='pre p1 fill-light mt0'>allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persisted: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>persisted</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    Whether the allocation was persisted to the database.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The ID of the instance to which the job was allocated.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='deallocatecallback'>
+      deallocateCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for job deallocation.</p>
+
+
+  <div class='pre p1 fill-light mt0'>deallocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='has_jobscallback'>
+      has_jobsCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for getting whether an instance has jobs allocated to it.</p>
+
+
+  <div class='pre p1 fill-light mt0'>has_jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, has_jobs: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>has_jobs</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    Whether the instance has jobs allocated to it.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='jobscallback'>
+      jobsCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for getting the jobs allocated to an instance.</p>
+
+
+  <div class='pre p1 fill-light mt0'>jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, job_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>job_ids</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    The IDs of the jobs allocated to the instance.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='_allocatecallback'>
+      _allocateCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for the job allocator algorithm.
+This is passed to and called by <a href="#atributo_allocate"><code>_allocate</code></a>.
+If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make sure you call it.</p>
+
+
+  <div class='pre p1 fill-light mt0'>_allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persist: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>persist</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    Whether the allocation should be persisted to the database.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The instance ID to which the job should be allocated.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
 
   
 

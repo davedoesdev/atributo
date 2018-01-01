@@ -160,7 +160,7 @@ class Atributo extends EventEmitter
      Allocate a job to an instance.
 
      @param {string} job_id - ID of the job to allocate.
-     @param {allocateCallback} cb - Called with the ID of the instance to which the job was allocated, and whether the allocation was persisted to the database.
+     @param {allocateCallback} cb - Called with the ID of the instance to which the job was allocated, and whether the allocation was persisted to the database. The default allocator chooses the instance based on a hash of `job_id`. You can override the [`_allocate`](#atributo_allocate) function to provide a different allocator.
      */
     allocate(job_id, cb)
     {
@@ -234,7 +234,7 @@ class Atributo extends EventEmitter
     }
 
     /**
-      Get when an instance has jobs allocated to it.
+      Get whether an instance has jobs allocated to it.
 
       @param {string} instance_id - ID of the instance.
       @param {has_jobsCallback} cb - Receives whether there are jobs allocated to to the instance.
@@ -332,6 +332,15 @@ class Atributo extends EventEmitter
         };
     }
 
+    /**
+     The default job allocator algorithm. `job_id` is hashed, treated as an
+     integer and used as an index in the array of available instances.
+     Override this method to provide a different algorithm.
+
+     @param {string} job_id - ID of the job to allocate.
+     @param {string[]} instance_ids - IDs of available instances.
+     @param {_allocateCallback} cb - Your allocator method should call this once it's decided to which instance the job should be allocated.
+     */
     _allocate(job_id, instance_ids, cb)
     {
         let h = crypto.createHash('md5'); // not for security, just mapping
@@ -343,12 +352,4 @@ class Atributo extends EventEmitter
 
 exports.Atributo = Atributo;
 
-// TODO:
-// ready event
-// closeCallback
-// availableCallback
-// unavailableCallback
-// instancesCallback
-// allocateCallback
-// deallocateCallback
-// has_jobsCallback
+// _allocateCallback
