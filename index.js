@@ -351,5 +351,3 @@ class Atributo extends EventEmitter
 }
 
 exports.Atributo = Atributo;
-
-// _allocateCallback

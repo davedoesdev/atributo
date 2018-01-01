@@ -546,6 +546,59 @@ describe('atributo', function ()
         });
     });
 
+    it('should retry end transaction', function (cb)
+    {
+        this.timeout(5000);
+
+        class TestAtributo extends Atributo
+        {
+            constructor(options)
+            {
+                super(options);
+                this._busy_count = 0;
+            }
+
+            _busy(f, retry, block)
+            {
+                return (err, ...args) =>
+                {
+                    expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
+                    expect(err.code).to.equal('SQLITE_ERROR');
+
+                    this._busy_count += 1;
+
+                    switch (this._busy_count)
+                    {
+                        case 1:
+                            retry();
+                            break;
+
+                        case 2:
+                            f(err, ...args);
+                            break;
+
+                        default:
+                            cb(new Error('called too many times'));
+                            break;
+                    }
+                };
+            }
+        }
+
+        new TestAtributo(
+        {
+            db_filename: path.join(__dirname, 'atributo.sqlite3')
+        }).on('ready', function ()
+        {
+            this._end_transaction(err =>
+            {
+                expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
+                expect(err.code).to.equal('SQLITE_ERROR');
+                this.close(cb);
+            })();
+        });
+    });
+
     after(function (cb)
     {
         ao.close(cb);
