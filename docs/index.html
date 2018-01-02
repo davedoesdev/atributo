@@ -1335,7 +1335,13 @@ Override this method to provide a different algorithm.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>persisted</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    Whether the allocation was persisted to the database.
+	    Whether the allocation was persisted to the database 
+<em>in this call</em>
+. If the job was already allocated to an instance in the database, 
+<code>persisted</code>
+ will be 
+<code>false</code>
+.
 
           </div>
           
