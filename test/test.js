@@ -570,7 +570,9 @@ describe('atributo', function ()
                     switch (this._busy_count)
                     {
                         case 1:
-                            retry();
+                            err = new Error();
+                            err.code = 'SQLITE_BUSY';
+                            super._busy(f, retry, block)(err, ...args);
                             break;
 
                         case 2:
