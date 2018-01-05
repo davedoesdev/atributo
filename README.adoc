@@ -1,0 +1,73 @@
+= atributo{nbsp}{nbsp}{nbsp}image:https://circleci.com/gh/davedoesdev/atributo.svg?style=svg[Build Status,link=https://circleci.com/gh/davedoesdev/atributo] image:https://ci.appveyor.com/api/projects/status/pu8lp7rsjxswy9t0?svg=true[Build Status,link=https://ci.appveyor.com/project/davedoesdev/atributo] image:https://coveralls.io/repos/github/davedoesdev/atributo/badge.svg[Coverage Status,link=https://coveralls.io/github/davedoesdev/atributo] image:https://img.shields.io/npm/v/atributo.svg[NPM version,link=https://www.npmjs.com/package/atributo]
+
+Node.js module for managing allocation of job IDs across a variable number of
+instance IDs.
+
+A typical use would be to allocate work across a number of worker processes.
+Job allocations are stored in a SQLite database which any worker (instance)
+can access.
+
+You can add a new instance ID and jobs will start to be allocated to it.
+You can mark an instance ID as unavailable and no further jobs will be allocated
+to it. You can then wait until an instance ID has no jobs allocate to it before
+removing it.
+
+This is useful if your jobs are 'sticky', i.e. a job must remain attached to the
+instance which started it. A job ID remains allocated to an instance ID even if
+a new instance ID is added which would otherwise have been allocated the job
+ID. You have to deallocate the job ID explicitly to get it reassigned.
+
+API documentation is available http://rawgit.davedoesdev.com/davedoesdev/atributo/master/docs/index.html[here].
+
+== Example
+
+[source,javascript]
+----
+include::test/example.js[]
+----
+
+<1> This is a new allocation persisted to the database in this call.
+<2> This is an allocation which already existed in the database before the
+    instance was made unavailable.
+<3> The allocation is removed from the database.
+
+
+// TODO: show override when know instance ID so know when to start job
+// plus explain default algorithm
+
+== Installation
+
+[source,bash]
+----
+npm install atributo
+----
+
+== Licence
+
+link:LICENCE[MIT]
+
+== Test
+
+[source,bash]
+----
+grunt test
+----
+
+== Lint
+
+[source,bash]
+----
+grunt lint
+----
+
+== Coverage
+
+[source,bash]
+----
+grunt coverage
+----
+
+https://istanbul.js.org/[Istanbul] results are available
+http://rawgit.davedoesdev.com/davedoesdev/atributo/master/coverage/lcov-report/index.html[here].
+
+Coveralls page is https://coveralls.io/r/davedoesdev/atributo[here].
