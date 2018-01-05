@@ -9,6 +9,14 @@
 exports._ready_event = function () {};
 
 /**
+ Close event. Emitted when the `Atributo` object has closed the database file.
+
+ @event close
+ @memberof Atributo
+ */
+exports._close_event = function () {};
+
+/**
  Callback type for closing the database file.
 
  @callback closeCallback
@@ -76,6 +84,15 @@ exports._has_jobsCallback = function (err, has_jobs) {};
  @param {string[]} job_ids - The IDs of the jobs allocated to the instance. 
  */
 exports._jobsCallback = function (err, job_ids) {};
+
+/**
+ Callback type for getting the instance to which a job is allocated.
+
+ @callback instanceCallback
+ @param {?Error} err - Error, if one occurred.
+ @param {?string} instance_id - The ID of the instance to which the job is allocated, or `null` if it hasn't been allocated to an instance.
+ */
+exports._instanceCallback = function (err, instance_id) {};
 
 /**
  Callback type for the job allocator algorithm.

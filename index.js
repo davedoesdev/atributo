@@ -29,6 +29,7 @@ class Atributo extends EventEmitter
                                         this._options.db_mode);
         this._db.on('error', err => this.emit('error', err));
         this._db.on('open', () => this.emit('ready'));
+        this._db.on('close', () => this.emit('close'));
 
         // We need to queue queries on a db connection:
         // https://github.com/mapbox/node-sqlite3/issues/304
@@ -42,7 +43,7 @@ class Atributo extends EventEmitter
     /**
      Close the database file. Subsequent operations will fail.
 
-     @param {closeCallback} cb - Called once the database is closed.
+     @param {closeCallback} [cb] - Called once the database is closed.
      */
     close(cb)
     {
@@ -277,6 +278,25 @@ class Atributo extends EventEmitter
                 cb(null, r.map(row => row.job));
             }
         ], cb), this._busy(cb, () => this.jobs(instance_id, cb)));
+    }
+
+    /**
+     Gets the instance to which a job is allocated.
+
+     @param {string} job_id - ID of the job.
+     @param {instanceCallback} cb - Called with the ID of the instance to which the job is allocated, or `null`.
+     */
+    instance(job_id, cb)
+    {
+        this._queue.push(cb =>
+        {
+            this._db.get('SELECT instance FROM allocations WHERE job = ?;',
+                         job_id,
+                         iferr(cb, r =>
+                         {
+                             cb(null, r === undefined ? null : r.instance);
+                         }));
+        }, this._busy(cb, () => this.instance(job_id, cb)));
     }
 
     _end_transaction(cb)

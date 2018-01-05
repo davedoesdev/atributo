@@ -86,6 +86,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#atributoinstance'
+                        class='regular pre-open'>
+                        #instance
+                      </a></li>
+                      
+                      <li><a
                         href='#atributo_allocate'
                         class='regular pre-open'>
                         #_allocate
@@ -102,6 +108,12 @@
                           href='#atributoeventready'
                           class='regular pre-open'>
                           ⓔ ready
+                        </a></li>
+                      
+                        <li><a
+                          href='#atributoeventclose'
+                          class='regular pre-open'>
+                          ⓔ close
                         </a></li>
                       
                     </ul>
@@ -185,6 +197,16 @@
                   href='#jobscallback'
                   class="">
                   jobsCallback
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#instancecallback'
+                  class="">
+                  instanceCallback
                   
                 </a>
                 
@@ -329,7 +351,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>close(cb)</span>
+            <span class='code strong strong truncate'>close(cb?)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -340,7 +362,7 @@
   <p>Close the database file. Subsequent operations will fail.</p>
 
 
-  <div class='pre p1 fill-light mt0'>close(cb: <a href="#closecallback">closeCallback</a>)</div>
+  <div class='pre p1 fill-light mt0'>close(cb: <a href="#closecallback">closeCallback</a>?)</div>
   
   
 
@@ -357,7 +379,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#closecallback">closeCallback</a>)</code>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#closecallback">closeCallback</a>?)</code>
 	    Called once the database is closed.
 
           </div>
@@ -872,6 +894,77 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='atributoinstance'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>instance(job_id, cb)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets the instance to which a job is allocated.</p>
+
+
+  <div class='pre p1 fill-light mt0'>instance(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#instancecallback">instanceCallback</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>job_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    ID of the job.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>cb</span> <code class='quiet'>(<a href="#instancecallback">instanceCallback</a>)</code>
+	    Called with the ID of the instance to which the job is allocated, or 
+<code>null</code>
+.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='atributo_allocate'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -976,6 +1069,52 @@ Override this method to provide a different algorithm.</p>
 
 
   <div class='pre p1 fill-light mt0'>ready</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='atributoeventclose'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>close</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Close event. Emitted when the <code>Atributo</code> object has closed the database file.</p>
+
+
+  <div class='pre p1 fill-light mt0'>close</div>
   
   
 
@@ -1567,6 +1706,83 @@ Override this method to provide a different algorithm.</p>
           <div>
             <span class='code bold'>job_ids</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
 	    The IDs of the jobs allocated to the instance.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='instancecallback'>
+      instanceCallback
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Callback type for getting the instance to which a job is allocated.</p>
+
+
+  <div class='pre p1 fill-light mt0'>instanceCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</code>
+	    Error, if one occurred.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    The ID of the instance to which the job is allocated, or 
+<code>null</code>
+ if it hasn't been allocated to an instance.
 
           </div>
           

@@ -398,6 +398,21 @@ describe('atributo', function ()
         });
     });
 
+    it('should get allocated instance for a job', function (cb)
+    {
+        ao.instance('bar', function (err, instance)
+        {
+            if (err) { return cb(err); }
+            expect(instance).to.equal('foo');
+            ao.instance('hasnotbeenallocated', function (err, instance)
+            {
+                if (err) { return cb(err); }
+                expect(instance).to.be.null;
+                cb();
+            });
+        });
+    });
+
     it('should error if db errors', function (cb)
     {
         let ao2 = new Atributo(
@@ -453,12 +468,22 @@ describe('atributo', function ()
 
                         case 3:
                             expect(err.code).to.equal('SQLITE_BUSY');
-                            ao._db.run('END TRANSACTION', iferr(cb, retry));
+                            this.instance('bar', iferr(cb, instance_id =>
+                            {
+                                expect(instance_id).to.equal('foo');
+                                retry();
+                            }));
                             break;
 
                         case 4:
+                            expect(err.code).to.equal('SQLITE_BUSY');
+                            ao._db.run('END TRANSACTION', iferr(cb, retry));
+                            break;
+
                         case 5:
                         case 6:
+                        case 7:
+                        case 8:
                             expect(err).to.equal(null);
                             f(err, ...args);
                             break;
@@ -480,7 +505,7 @@ describe('atributo', function ()
             {
                 this.instances(iferr(cb, instances =>
                 {
-                    expect(this._busy_count).to.equal(6);
+                    expect(this._busy_count).to.equal(8);
                     expect(instances).to.eql(
                     [
                         { id: 'foo', available: true },
@@ -598,6 +623,18 @@ describe('atributo', function ()
                 expect(err.code).to.equal('SQLITE_ERROR');
                 this.close(cb);
             })();
+        });
+    });
+
+    it('should emit a close event', function (cb)
+    {
+        new Atributo(
+        {
+            db_filename: path.join(__dirname, 'atributo.sqlite3')
+        }).on('ready', function ()
+        {
+            this.on('close', cb);
+            this.close();
         });
     });
 
