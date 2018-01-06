@@ -3,7 +3,8 @@
   "migrations": [
     {
       "title": "1513325138829-initial.js",
-      "timestamp": 1513631260702
+      "description": "initial version",
+      "timestamp": 1515227132690
     }
   ]
 }

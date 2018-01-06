@@ -11,6 +11,8 @@ function with_db(f, cb)
     db.on('open', f);
 }
 
+module.exports.description = 'initial version';
+
 module.exports.up = function (next)
 {
     with_db(function ()
@@ -27,9 +29,14 @@ module.exports.up = function (next)
             cb =>
             {
                 this.run('CREATE TABLE allocations (' +
-                         '  job TEXT UNIQUE,' +
+                         '  job TEXT PRIMARY KEY,' +
                          '  instance TEXT,' +
                          '  FOREIGN KEY(instance) REFERENCES instances(id));',
+                         cb);
+            },
+            cb =>
+            {
+                this.run('CREATE INDEX by_instance ON allocations (instance);',
                          cb);
             }
         ], next);

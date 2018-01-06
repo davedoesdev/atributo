@@ -1,4 +1,8 @@
 = atributo{nbsp}{nbsp}{nbsp}image:https://circleci.com/gh/davedoesdev/atributo.svg?style=svg[Build Status,link=https://circleci.com/gh/davedoesdev/atributo] image:https://ci.appveyor.com/api/projects/status/pu8lp7rsjxswy9t0?svg=true[Build Status,link=https://ci.appveyor.com/project/davedoesdev/atributo] image:https://coveralls.io/repos/github/davedoesdev/atributo/badge.svg[Coverage Status,link=https://coveralls.io/github/davedoesdev/atributo] image:https://img.shields.io/npm/v/atributo.svg[NPM version,link=https://www.npmjs.com/package/atributo]
+:prewrap!:
+:toc:
+:toclevels: 3
+:toc-placement: preamble
 
 Node.js module for managing allocation of job IDs across a variable number of
 instance IDs.
@@ -140,9 +144,10 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
     instance was made unavailable.
 <3> The allocation is removed from the database.
 
+== Allocator
 
-// TODO: show override when know instance ID so know when to start job
 // plus explain default algorithm
+// TODO: show override when know instance ID so know when to start job
 
 == Installation
 
