@@ -37,6 +37,9 @@ module.exports = function (grunt)
             example: {
                 src: 'test/run_example.js'
             },
+            example2: {
+                src: 'test/run_example2.js'
+            },
             options: {
                 bail: true
             }
@@ -89,7 +92,9 @@ module.exports = function (grunt)
                                       'copy:db',
                                       'mochaTest:multi_mp']);
     grunt.registerTask('test-example', ['copy:db',
-                                        'mochaTest:example']);
+                                        'mochaTest:example',
+                                        'copy:db',
+                                        'mochaTest:example2']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);

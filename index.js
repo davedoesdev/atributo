@@ -354,7 +354,7 @@ class Atributo extends EventEmitter
 
     /**
      The default job allocator algorithm. `job_id` is hashed, treated as an
-     integer and used as an index in the array of available instances.
+     integer and used as an index into the array of available instances.
      Override this method to provide a different algorithm.
 
      @param {string} job_id - ID of the job to allocate.
