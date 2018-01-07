@@ -16,4 +16,4 @@ jobs:
             npm install
       - run:
           name: test
-          command: ./node.bin/grunt lint coverage coveralls
+          command: ./node_modules/.bin/grunt lint coverage coveralls
