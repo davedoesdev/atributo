@@ -54,7 +54,7 @@ module.exports = function (grunt)
 
         exec: {
             cover: {
-                cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test test-multi test-example"
+                cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test-all"
             },
 
             cover_report: {
@@ -95,6 +95,7 @@ module.exports = function (grunt)
                                         'mochaTest:example',
                                         'copy:db',
                                         'mochaTest:example2']);
+    grunt.registerTask('test-all', ['test', 'test-multi', 'test-example']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);
