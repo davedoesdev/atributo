@@ -300,9 +300,6 @@ async.times(2, (i, cb) => {
 });
 ----
 
-// TODO:
-// single error in example.js, line 26 - not persisted
-
 == Installation
 
 [source,bash]
