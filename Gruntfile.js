@@ -21,7 +21,7 @@ module.exports = function (grunt)
     grunt.initConfig(
     {
         eslint: {
-            target: [ 'index.js', 'doc-extra.js', 'test/**/*.js' ]
+            target: [ 'Gruntfile.js', 'index.js', 'doc-extra.js', 'test/**/*.js' ]
         },
 
         mochaTest: {
