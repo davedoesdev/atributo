@@ -1,7 +1,7 @@
 {
   "name": "atributo",
   "description": "Allocate jobs across a variable number of instances",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/davedoesdev/atributo",
   "author": {
     "name": "David Halls",

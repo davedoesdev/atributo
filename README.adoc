@@ -13,7 +13,7 @@ can access.
 
 You can add a new instance ID and jobs will start to be allocated to it.
 You can mark an instance ID as unavailable and no further jobs will be allocated
-to it. You can then wait until an instance ID has no jobs allocate to it before
+to it. You can then wait until an instance ID has no jobs allocated to it before
 removing it.
 
 This is useful if your jobs are 'sticky', i.e. a job must remain attached to the
