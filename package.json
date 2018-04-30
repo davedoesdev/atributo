@@ -1,7 +1,7 @@
 {
   "name": "atributo",
   "description": "Allocate jobs across a variable number of instances",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "homepage": "https://github.com/davedoesdev/atributo",
   "author": {
     "name": "David Halls",
@@ -26,7 +26,7 @@
     "contract"
   ],
   "dependencies": {
-    "sqlite3": "~3.1.13",
+    "sqlite3": "~4.0.0",
     "async": "~2.6.0",
     "iferr": "~1.0.0"
   },
