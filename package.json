@@ -1,7 +1,7 @@
 {
   "name": "atributo",
   "description": "Allocate jobs across a variable number of instances",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/davedoesdev/atributo",
   "author": {
     "name": "David Halls",
@@ -26,22 +26,22 @@
     "contract"
   ],
   "dependencies": {
-    "sqlite3": "~4.0.0",
-    "async": "~2.6.0",
-    "iferr": "~1.0.0"
+    "sqlite3": "^4.1.0",
+    "async": "^2.6.3",
+    "iferr": "^1.0.2"
   },
   "devDependencies": {
-    "grunt": "~1.0.1",
-    "grunt-eslint": "~20.1.0",
-    "grunt-mocha-test": "~0.13.3",
-    "grunt-contrib-copy": "~1.0.0",
-    "grunt-exec": "~3.0.0",
-    "mocha": "~4.0.1",
-    "chai": "~4.1.2",
-    "nyc": "~11.3.0",
-    "migrate": "~1.0.0",
-    "babel-eslint": "~8.0.3",
-    "documentation": "~5.3.5",
-    "coveralls": "~3.0.0"
+    "grunt": "^1.0.4",
+    "grunt-eslint": "^22.0.0",
+    "grunt-mocha-test": "^0.13.3",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-exec": "^3.0.0",
+    "mocha": "^6.2.0",
+    "chai": "^4.2.0",
+    "nyc": "^14.1.1",
+    "migrate": "^1.6.2",
+    "babel-eslint": "^10.0.2",
+    "documentation": "^12.1.1",
+    "coveralls": "^3.0.6"
   }
 }

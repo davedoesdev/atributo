@@ -1,20 +1,21 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset='utf-8' />
-  <title>atributo 0.0.1 | Documentation</title>
+  <meta charset='utf-8'>
+  <title>atributo 0.0.5 | Documentation</title>
+  <meta name='description' content='Allocate jobs across a variable number of instances'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
-  <link href='assets/bass.css' type='text/css' rel='stylesheet' />
-  <link href='assets/style.css' type='text/css' rel='stylesheet' />
-  <link href='assets/github.css' type='text/css' rel='stylesheet' />
-  <link href='assets/split.css' type='text/css' rel='stylesheet' />
+  <link href='assets/bass.css' rel='stylesheet'>
+  <link href='assets/style.css' rel='stylesheet'>
+  <link href='assets/github.css' rel='stylesheet'>
+  <link href='assets/split.css' rel='stylesheet'>
 </head>
 <body class='documentation m0'>
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>atributo</h3>
-          <div class='mb1'><code>0.0.1</code></div>
+          <div class='mb1'><code>0.0.5</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -225,14 +226,14 @@
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
-            <a href='http://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
           </div>
         </div>
       </div>
       <div id='split-right' class='relative overflow-auto height-viewport-100'>
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -247,8 +248,7 @@
 
   <p>Creates an object which allocates jobs across a number of instances.</p>
 
-
-  <div class='pre p1 fill-light mt0'>new Atributo(options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
+    <div class='pre p1 fill-light mt0'>new Atributo(options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
   
   
     <p>
@@ -361,8 +361,7 @@
 
   <p>Close the database file. Subsequent operations will fail.</p>
 
-
-  <div class='pre p1 fill-light mt0'>close(cb: <a href="#closecallback">closeCallback</a>?)</div>
+    <div class='pre p1 fill-light mt0'>close(cb: <a href="#closecallback">closeCallback</a>?)</div>
   
   
 
@@ -402,6 +401,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -421,8 +422,7 @@
 
   <p>Make an instance available for job allocation.</p>
 
-
-  <div class='pre p1 fill-light mt0'>available(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#availablecallback">availableCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>available(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#availablecallback">availableCallback</a>)</div>
   
   
 
@@ -471,6 +471,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -490,8 +492,7 @@
 
   <p>Make an instance unavailable for job allocation.</p>
 
-
-  <div class='pre p1 fill-light mt0'>unavailable(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, destroyed: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, cb: <a href="#unavailablecallback">unavailableCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>unavailable(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, destroyed: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, cb: <a href="#unavailablecallback">unavailableCallback</a>)</div>
   
   
 
@@ -549,6 +550,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -568,8 +571,7 @@
 
   <p>Get a list of instance IDs along with their availability.</p>
 
-
-  <div class='pre p1 fill-light mt0'>instances(cb: <a href="#instancescallback">instancesCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>instances(cb: <a href="#instancescallback">instancesCallback</a>)</div>
   
   
 
@@ -609,6 +611,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -628,8 +632,7 @@
 
   <p>Allocate a job to an instance.</p>
 
-
-  <div class='pre p1 fill-light mt0'>allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#allocatecallback">allocateCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#allocatecallback">allocateCallback</a>)</div>
   
   
 
@@ -682,6 +685,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -701,8 +706,7 @@
 
   <p>Remove a job allocation.</p>
 
-
-  <div class='pre p1 fill-light mt0'>deallocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#deallocatecallback">deallocateCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>deallocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#deallocatecallback">deallocateCallback</a>)</div>
   
   
 
@@ -751,6 +755,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -770,8 +776,7 @@
 
   <p>Get whether an instance has jobs allocated to it.</p>
 
-
-  <div class='pre p1 fill-light mt0'>has_jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#has_jobscallback">has_jobsCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>has_jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#has_jobscallback">has_jobsCallback</a>)</div>
   
   
 
@@ -820,6 +825,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -839,8 +846,7 @@
 
   <p>Gets the jobs allocated to an instance.</p>
 
-
-  <div class='pre p1 fill-light mt0'>jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#jobscallback">jobsCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>jobs(instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#jobscallback">jobsCallback</a>)</div>
   
   
 
@@ -889,6 +895,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -908,8 +916,7 @@
 
   <p>Gets the instance to which a job is allocated.</p>
 
-
-  <div class='pre p1 fill-light mt0'>instance(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#instancecallback">instanceCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>instance(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, cb: <a href="#instancecallback">instanceCallback</a>)</div>
   
   
 
@@ -960,6 +967,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -981,8 +990,7 @@
 integer and used as an index into the array of available instances.
 Override this method to provide a different algorithm.</p>
 
-
-  <div class='pre p1 fill-light mt0'>_allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, instance_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, cb: <a href="#_allocatecallback">_allocateCallback</a>)</div>
+    <div class='pre p1 fill-light mt0'>_allocate(job_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, instance_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, cb: <a href="#_allocatecallback">_allocateCallback</a>)</div>
   
   
 
@@ -1040,12 +1048,16 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
       </div>
     </div>
   
 </div>
+
+  
 
   
 
@@ -1067,8 +1079,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Ready event. Emitted when the <code>Atributo</code> object has opened the database file.</p>
 
-
-  <div class='pre p1 fill-light mt0'>ready</div>
+    <div class='pre p1 fill-light mt0'>ready</div>
   
   
 
@@ -1077,6 +1088,8 @@ Override this method to provide a different algorithm.</p>
   
   
   
+  
+
   
 
   
@@ -1113,8 +1126,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Close event. Emitted when the <code>Atributo</code> object has closed the database file.</p>
 
-
-  <div class='pre p1 fill-light mt0'>close</div>
+    <div class='pre p1 fill-light mt0'>close</div>
   
   
 
@@ -1123,6 +1135,8 @@ Override this method to provide a different algorithm.</p>
   
   
   
+  
+
   
 
   
@@ -1153,7 +1167,7 @@ Override this method to provide a different algorithm.</p>
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1168,8 +1182,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for closing the database file.</p>
 
-
-  <div class='pre p1 fill-light mt0'>closeCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+    <div class='pre p1 fill-light mt0'>closeCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
   
     <p>
       Type:
@@ -1214,12 +1227,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1234,8 +1249,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for making an instance available.</p>
 
-
-  <div class='pre p1 fill-light mt0'>availableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+    <div class='pre p1 fill-light mt0'>availableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
   
     <p>
       Type:
@@ -1280,12 +1294,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1300,8 +1316,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for making an instance unavailable.</p>
 
-
-  <div class='pre p1 fill-light mt0'>unavailableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+    <div class='pre p1 fill-light mt0'>unavailableCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
   
     <p>
       Type:
@@ -1346,12 +1361,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1366,8 +1383,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for listing instances.</p>
 
-
-  <div class='pre p1 fill-light mt0'>instancesCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instances: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>>)</div>
+    <div class='pre p1 fill-light mt0'>instancesCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instances: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>>)</div>
   
     <p>
       Type:
@@ -1421,12 +1437,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1441,8 +1459,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for job allocation.</p>
 
-
-  <div class='pre p1 fill-light mt0'>allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persisted: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+    <div class='pre p1 fill-light mt0'>allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persisted: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
   
     <p>
       Type:
@@ -1511,12 +1528,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1531,8 +1550,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for job deallocation.</p>
 
-
-  <div class='pre p1 fill-light mt0'>deallocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
+    <div class='pre p1 fill-light mt0'>deallocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?)</div>
   
     <p>
       Type:
@@ -1577,12 +1595,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1597,8 +1617,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for getting whether an instance has jobs allocated to it.</p>
 
-
-  <div class='pre p1 fill-light mt0'>has_jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, has_jobs: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
+    <div class='pre p1 fill-light mt0'>has_jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, has_jobs: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
   
     <p>
       Type:
@@ -1652,12 +1671,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1672,8 +1693,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for getting the jobs allocated to an instance.</p>
 
-
-  <div class='pre p1 fill-light mt0'>jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, job_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</div>
+    <div class='pre p1 fill-light mt0'>jobsCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, job_ids: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</div>
   
     <p>
       Type:
@@ -1727,12 +1747,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1747,8 +1769,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for getting the instance to which a job is allocated.</p>
 
-
-  <div class='pre p1 fill-light mt0'>instanceCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
+    <div class='pre p1 fill-light mt0'>instanceCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
     <p>
       Type:
@@ -1804,12 +1825,14 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
         
           
-            <section class='p2 mb2 clearfix bg-white minishadow'>
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
@@ -1826,8 +1849,7 @@ Override this method to provide a different algorithm.</p>
 This is passed to and called by <a href="#atributo_allocate"><code>_allocate</code></a>.
 If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make sure you call it.</p>
 
-
-  <div class='pre p1 fill-light mt0'>_allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persist: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+    <div class='pre p1 fill-light mt0'>_allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persist: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
   
     <p>
       Type:
@@ -1875,6 +1897,8 @@ If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make su
         </div>
       
     </div>
+  
+
   
 
   
