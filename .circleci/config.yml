@@ -17,3 +17,4 @@ jobs:
       - run:
           name: test
           command: ./node_modules/.bin/grunt lint coverage coveralls
+
