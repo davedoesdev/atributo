@@ -2,6 +2,7 @@
 
 const crypto = require('crypto'),
       sqlite3 = require('sqlite3'),
+      { Client } = require('pg'),
       async = require('async'),
       iferr = require('iferr'),
       EventEmitter = require('events').EventEmitter;
@@ -10,9 +11,11 @@ const crypto = require('crypto'),
  Creates an object which allocates jobs across a number of instances.
 
  @param {Object} options - Configuration options.
- @param {string} options.db_filename - Filenames in which to store the allocations. You can use the same file in multiple `Atributo` objects, even across different processes. They will all make and see the same allocations.
- @param {integer} [options.db_mode] - Mode to open the file in. See the [sqlite3](https://github.com/mapbox/node-sqlite3/wiki/API#new-sqlite3databasefilename-mode-callback) documentation.
- @param {integer} [options.busy_wait=1000] - Number of milliseconds to wait before retrying if another `Atributo` object has the database file locked.
+ @param {'sqlite' | 'pg'} [options.db_type=sqlite] - Type of database to use.
+ @param {string} options.db_filename - (sqlite) Filename in which to store the allocations. You can use the same file in multiple `Atributo` objects, even across different processes. They will all make and see the same allocations.
+ @param {integer} [options.db_mode] - (sqlite) Mode to open the file in. See the [sqlite3](https://github.com/mapbox/node-sqlite3/wiki/API#new-sqlite3databasefilename-mode-callback) documentation.
+ @param {integer} [options.busy_wait=1000] - (sqlite) Number of milliseconds to wait before retrying if another `Atributo` object has the database file locked.
+ @param {Object} options.db - (pg) [`node-postgres` configuration](https://node-postgres.com/api/client).
  */
 class Atributo extends EventEmitter
 {
@@ -22,14 +25,37 @@ class Atributo extends EventEmitter
 
         this._options = Object.assign(
         {
+            db_type: 'sqlite',
             busy_wait: 1000
         }, options);
 
-        this._db = new sqlite3.Database(this._options.db_filename,
-                                        this._options.db_mode);
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db = new sqlite3.Database(this._options.db_filename,
+                                            this._options.db_mode);
+            this._db.on('open', () => this.emit('ready'));
+            this._db.on('close', () => this.emit('close'));
+            break;
+
+        case 'postgres':
+            this._db = new Client(this._options.db);
+            this._db.connect(err =>
+            {
+                if (err)
+                {
+                    return this.emit('error', err);
+                }
+                this.emit('ready');
+            });
+            this._db.on('end', () => this.emit('close'));
+            break;
+
+        default:
+            throw new Error(`invalid database type: ${this._options.db_type}`);
+        }
+
         this._db.on('error', err => this.emit('error', err));
-        this._db.on('open', () => this.emit('ready'));
-        this._db.on('close', () => this.emit('close'));
 
         // We need to queue queries on a db connection:
         // https://github.com/mapbox/node-sqlite3/issues/304
@@ -47,7 +73,16 @@ class Atributo extends EventEmitter
      */
     close(cb)
     {
-        this._db.close(cb);
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.close(cb);
+            break;
+
+        case 'postgres':
+            this._db.end(cb);
+            break;
+        }
     }
 
     /**
@@ -66,17 +101,17 @@ class Atributo extends EventEmitter
             [
                 cb =>
                 {
-                    this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 1);',
-                                 instance_id,
-                                 cb);
+                    this._run('INSERT OR IGNORE INTO instances VALUES ($1, 1);',
+                              [instance_id],
+                              cb);
                 },
                 cb =>
                 {
                     // Do this in a transaction so we don't error if someone else
                     // deletes the row here.
-                    this._db.run('UPDATE instances SET available = 1 WHERE id = ?;',
-                                 instance_id,
-                                 cb);
+                    this._run('UPDATE instances SET available = 1 WHERE id = $1;',
+                              [instance_id],
+                              cb);
                 }
             ], cb), cb);
         });
@@ -98,15 +133,15 @@ class Atributo extends EventEmitter
             let statements = [
                 cb =>
                 {
-                    this._db.run('INSERT OR IGNORE INTO instances VALUES (?, 0);',
-                                 instance_id,
-                                 cb);
+                    this._run('INSERT OR IGNORE INTO instances VALUES ($1, 0);',
+                              [instance_id],
+                              cb);
                 },
                 cb =>
                 {
-                    this._db.run('UPDATE instances SET available = 0 WHERE id = ?;',
-                                 instance_id,
-                                 cb);
+                    this._run('UPDATE instances SET available = 0 WHERE id = $1;',
+                              [instance_id],
+                              cb);
                 }
             ];
 
@@ -115,15 +150,15 @@ class Atributo extends EventEmitter
                 statements.push(
                     cb =>
                     {
-                        this._db.run('DELETE FROM allocations WHERE instance = ?;',
-                                     instance_id,
-                                     cb);
+                        this._run('DELETE FROM allocations WHERE instance = $1;',
+                                  [instance_id],
+                                  cb);
                     },
                     cb =>
                     {
-                        this._db.run('DELETE FROM instances WHERE id = ?;',
-                                     instance_id,
-                                     cb);
+                        this._run('DELETE FROM instances WHERE id = $1;',
+                                  [instance_id],
+                                  cb);
                     }
                 );
             }
@@ -143,8 +178,9 @@ class Atributo extends EventEmitter
         [
             cb =>
             {
-                this._db.all('SELECT * from instances;',
-                             cb);
+                this._all('SELECT * from instances;',
+                          [],
+                          cb);
             },
             (r, cb) =>
             {
@@ -171,9 +207,9 @@ class Atributo extends EventEmitter
         {
             this._queue.unshift(cb => 
             {
-                this._db.get('SELECT instance FROM allocations WHERE job = ?;',
-                             job_id,
-                             cb);
+                this._get('SELECT instance FROM allocations WHERE job = $1;',
+                          [job_id],
+                          cb);
             }, iferr(cb, r =>
             {
                 if (r !== undefined)
@@ -183,8 +219,9 @@ class Atributo extends EventEmitter
 
                 this._queue.unshift(cb => 
                 {
-                    this._db.all('SELECT id FROM instances WHERE available = 1;',
-                                 cb);
+                    this._all('SELECT id FROM instances WHERE available = 1;',
+                              [],
+                              cb);
                 }, iferr(cb, r =>
                 {
                     if (r.length === 0)
@@ -204,10 +241,9 @@ class Atributo extends EventEmitter
 
                         this._queue.unshift(cb =>
                         {
-                            this._db.run('INSERT INTO allocations VALUES (?, ?);',
-                                         job_id,
-                                         instance_id,
-                                         cb);
+                            this._run('INSERT INTO allocations VALUES ($1, $2);',
+                                      [job_id, instance_id],
+                                      cb);
                         }, iferr(cb, r =>
                         {
                             cb(null, true, instance_id);
@@ -228,9 +264,9 @@ class Atributo extends EventEmitter
     {
         this._queue.push(cb =>
         {
-            this._db.run('DELETE FROM allocations WHERE job = ?;',
-                         job_id,
-                         cb);
+            this._run('DELETE FROM allocations WHERE job = $1;',
+                      [job_id],
+                      cb);
         }, this._busy(cb, () => this.deallocate(job_id, cb)));
     }
 
@@ -246,9 +282,9 @@ class Atributo extends EventEmitter
         [
             cb =>
             {
-                this._db.get('SELECT count(*) FROM allocations WHERE instance = ?;',
-                             instance_id,
-                             cb);
+                this._get('SELECT count(*) FROM allocations WHERE instance = $1;',
+                          [instance_id],
+                          cb);
             },
             (r, cb) =>
             {
@@ -269,9 +305,9 @@ class Atributo extends EventEmitter
         [
             cb =>
             {
-                this._db.all('SELECT job from allocations WHERE instance = ?;',
-                             instance_id,
-                             cb);
+                this._all('SELECT job from allocations WHERE instance = $1;',
+                          [instance_id],
+                          cb);
             },
             (r, cb) =>
             {
@@ -290,12 +326,12 @@ class Atributo extends EventEmitter
     {
         this._queue.push(cb =>
         {
-            this._db.get('SELECT instance FROM allocations WHERE job = ?;',
-                         job_id,
-                         iferr(cb, r =>
-                         {
-                             cb(null, r === undefined ? null : r.instance);
-                         }));
+            this._get('SELECT instance FROM allocations WHERE job = $1;',
+                      [job_id],
+                      iferr(cb, r =>
+                      {
+                          cb(null, r === undefined ? null : r.instance);
+                      }));
         }, this._busy(cb, () => this.instance(job_id, cb)));
     }
 
@@ -307,8 +343,9 @@ class Atributo extends EventEmitter
             {
                 return this._queue.unshift(cb =>
                 {
-                    this._db.run('ROLLBACK',
-                                 cb);
+                    this._run('ROLLBACK',
+                              [],
+                              cb);
                 }, this._busy(err2 => cb(err2 || err, ...args),
                               () => f(err, ...args),
                               true));
@@ -316,8 +353,9 @@ class Atributo extends EventEmitter
 
             this._queue.unshift(cb =>
             {
-                this._db.run('END TRANSACTION',
-                             cb);
+                this._run('END TRANSACTION',
+                          [],
+                          cb);
             }, this._busy(err => cb(err, ...args),
                           () => f(err, ...args),
                           true));
@@ -326,10 +364,59 @@ class Atributo extends EventEmitter
         return f;
     }
 
+    // Note: $1, $2 placeholders in SQL statements are PostgreSQL syntax.
+    // However, as long as they appear _in order_ (i.e. never $2 before $1)
+    // then they work in SQLite too. This is because when $ is used, SQLite
+    // binds first parameter in array to first $whatever in the statement,
+    // second parameter to second $something etc.
+
+    _run(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.run(sql, ...values, cb);
+            break;
+
+        case 'postgres':
+            this._db.query(sql, values, cb);
+            break;
+        }
+    }
+
+    _all(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.all(sql, ...values, cb);
+            break;
+
+        case 'postgres':
+            this._db.query(sql, values, cb);
+            break;
+        }
+    }
+
+    _get(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.get(sql, ...values, cb);
+            break;
+
+        case 'postgres':
+            this._db.query(sql, values, cb);
+            break;
+        }
+
+    }
+
     _in_transaction(cb, f)
     {
         this._queue.push(cb2 =>
-            this._db.run('BEGIN TRANSACTION', cb2),
+            this._run('BEGIN TRANSACTION', [], cb2),
             iferr(cb, () => f(this._end_transaction(cb))));
     }
 

@@ -291,9 +291,20 @@
             <tbody class='mt1'>
               
                 <tr>
+  <td class='break-word'><span class='code bold'>options.db_type</span> <code class='quiet'>(<code>"sqlite"</code> | <code>"pg"</code>)</code>
+  
+    (default <code>sqlite</code>)
+  </td>
+  <td class='break-word'><span>Type of database to use.
+</span></td>
+</tr>
+
+
+              
+                <tr>
   <td class='break-word'><span class='code bold'>options.db_filename</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
   </td>
-  <td class='break-word'><span>Filenames in which to store the allocations. You can use the same file in multiple 
+  <td class='break-word'><span>(sqlite) Filename in which to store the allocations. You can use the same file in multiple 
 <code>Atributo</code>
  objects, even across different processes. They will all make and see the same allocations.
 </span></td>
@@ -304,7 +315,7 @@
                 <tr>
   <td class='break-word'><span class='code bold'>options.db_mode</span> <code class='quiet'>integer?</code>
   </td>
-  <td class='break-word'><span>Mode to open the file in. See the 
+  <td class='break-word'><span>(sqlite) Mode to open the file in. See the 
 <a href="https://github.com/mapbox/node-sqlite3/wiki/API#new-sqlite3databasefilename-mode-callback">sqlite3</a>
  documentation.
 </span></td>
@@ -317,9 +328,20 @@
   
     (default <code>1000</code>)
   </td>
-  <td class='break-word'><span>Number of milliseconds to wait before retrying if another 
+  <td class='break-word'><span>(sqlite) Number of milliseconds to wait before retrying if another 
 <code>Atributo</code>
  object has the database file locked.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.db</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  </td>
+  <td class='break-word'><span>(pg) 
+<a href="https://node-postgres.com/api/client"><code>node-postgres</code> configuration</a>
+.
 </span></td>
 </tr>
 
