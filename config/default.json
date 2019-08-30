@@ -1,0 +1,7 @@
+{
+  "db": {
+    "host": "/var/run/postgresql",
+    "database": "atributo",
+    "migrations-dir": "pg-migrations"
+  }
+}

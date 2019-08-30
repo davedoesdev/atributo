@@ -17,6 +17,9 @@
   },
   "license": "MIT",
   "main": "index.js",
+  "scripts": {
+    "pg-migrate": "node-pg-migrate"
+  },
   "directories": {
     "test": "test"
   },
@@ -26,9 +29,11 @@
     "contract"
   ],
   "dependencies": {
-    "sqlite3": "^4.1.0",
     "async": "^2.6.3",
-    "iferr": "^1.0.2"
+    "iferr": "^1.0.2",
+    "node-pg-migrate": "^3.22.0",
+    "pg": "^7.12.1",
+    "sqlite3": "^4.1.0"
   },
   "devDependencies": {
     "grunt": "^1.0.4",
