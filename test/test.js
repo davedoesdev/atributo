@@ -10,23 +10,23 @@ const path = require('path'),
 
 const db_type = process.env.ATRIBUTO_TEST_DB_TYPE;
 
-describe(`atributo (${db_type})`, function ()
+const ao_options = Object.assign(
+{
+    db_filename: path.join(__dirname, 'atributo.sqlite3')
+}, config);
+
+if (db_type)
+{
+    ao_options.db_type = db_type;
+}
+
+describe(`atributo (${db_type || 'sqlite'})`, function ()
 {
     let ao;
 
     before(function (cb)
     {
-        const options = Object.assign(
-        {
-            db_filename: path.join(__dirname, 'atributo.sqlite3')
-        }, config);
-
-        if (db_type)
-        {
-            options.db_type = db_type;
-        }
-
-        ao = new Atributo(options);
+        ao = new Atributo(ao_options);
         ao.on('ready', cb);
     });
 
@@ -352,10 +352,7 @@ describe(`atributo (${db_type})`, function ()
                 }
             }
 
-            new TestAtributo(
-            {
-                db_filename: path.join(__dirname, 'atributo.sqlite3')
-            }).on('ready', function ()
+            new TestAtributo(ao_options).on('ready', function ()
             {
                 this.allocate('bar11', (err, persisted, instance_id) =>
                 {
@@ -425,21 +422,45 @@ describe(`atributo (${db_type})`, function ()
 
     it('should error if db errors', function (cb)
     {
-        let ao2 = new Atributo(
+        const ao2_options = Object.assign({}, ao_options,
         {
             db_filename: path.join(__dirname, 'does_not_exist.sqlite3'),
             db_mode: sqlite3.OPEN_READONLY
         });
+        ao2_options.db = Object.assign({}, ao2_options.db,
+        {
+            database: 'does_not_exist'
+        });
+
+        const ao2 = new Atributo(ao2_options);
 
         ao2.on('error', function (err)
         {
-            expect(err.message).to.equal('SQLITE_CANTOPEN: unable to open database file');
+            let msg;
+
+            switch (ao2._options.db_type)
+            {
+            case 'sqlite':
+                msg = 'SQLITE_CANTOPEN: unable to open database file';
+                break;
+
+            case 'pg':
+                msg = 'database "does_not_exist" does not exist';
+                break;
+            }
+
+            expect(err.message).to.equal(msg);
             cb();
         });
     });
 
     it('should retry reads', function (cb)
     {
+        if (ao._options.db_type !== 'sqlite')
+        {
+            return this.skip();
+        }
+
         this.timeout(5000);
 
         class TestAtributo extends Atributo
@@ -506,10 +527,7 @@ describe(`atributo (${db_type})`, function ()
             }
         }
 
-        new TestAtributo(
-        {
-            db_filename: path.join(__dirname, 'atributo.sqlite3')
-        }).on('ready', function ()
+        new TestAtributo(ao_options).on('ready', function ()
         {
             ao._db.run('BEGIN EXCLUSIVE TRANSACTION', iferr(cb, () =>
             {
@@ -544,8 +562,17 @@ describe(`atributo (${db_type})`, function ()
             {
                 return (err, ...args) =>
                 {
-                    expect(err.message).to.equal('SQLITE_ERROR: cannot rollback - no transaction is active');
-                    expect(err.code).to.equal('SQLITE_ERROR');
+                    switch (this._options.db_type)
+                    {
+                    case 'sqlite':
+                        expect(err.message).to.equal('SQLITE_ERROR: cannot rollback - no transaction is active');
+                        expect(err.code).to.equal('SQLITE_ERROR');
+                        break;
+
+                    case 'pg':
+                        expect(err).not.to.exist;
+                        break;
+                    }
 
                     this._busy_count += 1;
 
@@ -567,15 +594,22 @@ describe(`atributo (${db_type})`, function ()
             }
         }
 
-        new TestAtributo(
-        {
-            db_filename: path.join(__dirname, 'atributo.sqlite3')
-        }).on('ready', function ()
+        new TestAtributo(ao_options).on('ready', function ()
         {
             this._end_transaction(err =>
             {
-                expect(err.message).to.equal('SQLITE_ERROR: cannot rollback - no transaction is active');
-                expect(err.code).to.equal('SQLITE_ERROR');
+                switch (this._options.db_type)
+                {
+                case 'sqlite':
+                    expect(err.message).to.equal('SQLITE_ERROR: cannot rollback - no transaction is active');
+                    expect(err.code).to.equal('SQLITE_ERROR');
+                    break;
+
+                case 'pg':
+                    expect(err.message).to.equal('dummy error');
+                    break;
+                }
+
                 this.close(cb);
             })(new Error('dummy error'));
         });
@@ -597,8 +631,17 @@ describe(`atributo (${db_type})`, function ()
             {
                 return (err, ...args) =>
                 {
-                    expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
-                    expect(err.code).to.equal('SQLITE_ERROR');
+                    switch (this._options.db_type)
+                    {
+                    case 'sqlite':
+                        expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
+                        expect(err.code).to.equal('SQLITE_ERROR');
+                        break;
+
+                    case 'pg':
+                        expect(err).not.to.exist;
+                        break;
+                    }
 
                     this._busy_count += 1;
 
@@ -622,15 +665,22 @@ describe(`atributo (${db_type})`, function ()
             }
         }
 
-        new TestAtributo(
-        {
-            db_filename: path.join(__dirname, 'atributo.sqlite3')
-        }).on('ready', function ()
+        new TestAtributo(ao_options).on('ready', function ()
         {
             this._end_transaction(err =>
             {
-                expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
-                expect(err.code).to.equal('SQLITE_ERROR');
+                switch (this._options.db_type)
+                {
+                case 'sqlite':
+                    expect(err.message).to.equal('SQLITE_ERROR: cannot commit - no transaction is active');
+                    expect(err.code).to.equal('SQLITE_ERROR');
+                    break;
+
+                case 'pg':
+                    expect(err).not.to.exist;
+                    break;
+                }
+
                 this.close(cb);
             })();
         });
@@ -638,10 +688,7 @@ describe(`atributo (${db_type})`, function ()
 
     it('should emit a close event', function (cb)
     {
-        new Atributo(
-        {
-            db_filename: path.join(__dirname, 'atributo.sqlite3')
-        }).on('ready', function ()
+        new Atributo(ao_options).on('ready', function ()
         {
             this.on('close', cb);
             this.close();
@@ -654,4 +701,5 @@ describe(`atributo (${db_type})`, function ()
     });
 
     // TODO: Check what happens if allocate same job
+    // pass on errors for pg
 });
