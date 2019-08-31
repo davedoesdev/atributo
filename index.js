@@ -36,9 +36,11 @@ class Atributo extends EventEmitter
                                             this._options.db_mode);
             this._db.on('open', () => this.emit('ready'));
             this._db.on('close', () => this.emit('close'));
+            this._true = 1;
+            this._false = 0;
             break;
 
-        case 'postgres':
+        case 'pg':
             this._db = new Client(this._options.db);
             this._db.connect(err =>
             {
@@ -49,6 +51,8 @@ class Atributo extends EventEmitter
                 this.emit('ready');
             });
             this._db.on('end', () => this.emit('close'));
+            this._true = true;
+            this._false = false;
             break;
 
         default:
@@ -79,7 +83,7 @@ class Atributo extends EventEmitter
             this._db.close(cb);
             break;
 
-        case 'postgres':
+        case 'pg':
             this._db.end(cb);
             break;
         }
@@ -109,8 +113,8 @@ class Atributo extends EventEmitter
                 {
                     // Do this in a transaction so we don't error if someone else
                     // deletes the row here.
-                    this._run('UPDATE instances SET available = 1 WHERE id = $1;',
-                              [instance_id],
+                    this._run('UPDATE instances SET available = $1 WHERE id = $2;',
+                              [this._true, instance_id],
                               cb);
                 }
             ], cb), cb);
@@ -139,8 +143,8 @@ class Atributo extends EventEmitter
                 },
                 cb =>
                 {
-                    this._run('UPDATE instances SET available = 0 WHERE id = $1;',
-                              [instance_id],
+                    this._run('UPDATE instances SET available = $1 WHERE id = $2;',
+                              [this._false, instance_id],
                               cb);
                 }
             ];
@@ -219,8 +223,8 @@ class Atributo extends EventEmitter
 
                 this._queue.unshift(cb => 
                 {
-                    this._all('SELECT id FROM instances WHERE available = 1;',
-                              [],
+                    this._all('SELECT id FROM instances WHERE available = $1;',
+                              [this._true],
                               cb);
                 }, iferr(cb, r =>
                 {
@@ -364,55 +368,6 @@ class Atributo extends EventEmitter
         return f;
     }
 
-    // Note: $1, $2 placeholders in SQL statements are PostgreSQL syntax.
-    // However, as long as they appear _in order_ (i.e. never $2 before $1)
-    // then they work in SQLite too. This is because when $ is used, SQLite
-    // binds first parameter in array to first $whatever in the statement,
-    // second parameter to second $something etc.
-
-    _run(sql, values, cb)
-    {
-        switch (this._options.db_type)
-        {
-        case 'sqlite':
-            this._db.run(sql, ...values, cb);
-            break;
-
-        case 'postgres':
-            this._db.query(sql, values, cb);
-            break;
-        }
-    }
-
-    _all(sql, values, cb)
-    {
-        switch (this._options.db_type)
-        {
-        case 'sqlite':
-            this._db.all(sql, ...values, cb);
-            break;
-
-        case 'postgres':
-            this._db.query(sql, values, cb);
-            break;
-        }
-    }
-
-    _get(sql, values, cb)
-    {
-        switch (this._options.db_type)
-        {
-        case 'sqlite':
-            this._db.get(sql, ...values, cb);
-            break;
-
-        case 'postgres':
-            this._db.query(sql, values, cb);
-            break;
-        }
-
-    }
-
     _in_transaction(cb, f)
     {
         this._queue.push(cb2 =>
@@ -437,6 +392,55 @@ class Atributo extends EventEmitter
 
             f(err, ...args);
         };
+    }
+
+    // Note: $1, $2 placeholders in SQL statements are PostgreSQL syntax.
+    // However, as long as they appear _in order_ (i.e. never $2 before $1)
+    // then they work in SQLite too. This is because when $ is used, SQLite
+    // binds first parameter in array to first $whatever in the statement,
+    // second parameter to second $something etc.
+
+    _run(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.run(sql, ...values, cb);
+            break;
+
+        case 'pg':
+            this._db.query(sql, values, cb);
+            break;
+        }
+    }
+
+    _all(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.all(sql, ...values, cb);
+            break;
+
+        case 'pg':
+            this._db.query(sql, values, iferr(cb, r => cb(null, r.rows)));
+            break;
+        }
+    }
+
+    _get(sql, values, cb)
+    {
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            this._db.get(sql, ...values, cb);
+            break;
+
+        case 'pg':
+            this._db.query(sql, values, iferr(cb, r => cb(null, r.rows[0])));
+            break;
+        }
+
     }
 
     /**

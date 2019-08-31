@@ -5,18 +5,28 @@ const path = require('path'),
       iferr = require('iferr'),
       expect = require('chai').expect,
       sqlite3 = require('sqlite3'),
-      Atributo = require('..').Atributo;
+      Atributo = require('..').Atributo,
+      config = require('config');
 
-describe('atributo', function ()
+const db_type = process.env.ATRIBUTO_TEST_DB_TYPE;
+
+describe(`atributo (${db_type})`, function ()
 {
     let ao;
 
     before(function (cb)
     {
-        ao = new Atributo(
+        const options = Object.assign(
         {
             db_filename: path.join(__dirname, 'atributo.sqlite3')
-        });
+        }, config);
+
+        if (db_type)
+        {
+            options.db_type = db_type;
+        }
+
+        ao = new Atributo(options);
         ao.on('ready', cb);
     });
 

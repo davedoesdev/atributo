@@ -46,7 +46,7 @@ module.exports = function (grunt)
         },
 
         copy: {
-            db: {
+            sqlite_db: {
                 src: 'atributo.empty.sqlite3',
                 dest: 'test/atributo.sqlite3'
             }
@@ -75,6 +75,10 @@ module.exports = function (grunt)
 
             serve_documentation: {
                 cmd: './node_modules/.bin/documentation serve -w -c documentation.yml index.js doc-extra.js'
+            },
+
+            clear_pg: {
+                cmd: "psql -d atributo -c 'DELETE FROM allocations;' -c 'DELETE from instances;'"
             }
         }
     });
@@ -84,16 +88,20 @@ module.exports = function (grunt)
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-copy');
 
+    const reset = [
+        process.env.ATRIBUTO_TEST_DB_TYPE === 'pg' ? 'exec:clear_pg' : 'copy:sqlite_db'
+    ];
+
     grunt.registerTask('lint', 'eslint');
-    grunt.registerTask('test', ['copy:db',
+    grunt.registerTask('test', [...reset,
                                 'mochaTest:default']);
-    grunt.registerTask('test-multi', ['copy:db',
+    grunt.registerTask('test-multi', [...reset,
                                       'mochaTest:multi_sp',
-                                      'copy:db',
+                                      ...reset,
                                       'mochaTest:multi_mp']);
-    grunt.registerTask('test-example', ['copy:db',
+    grunt.registerTask('test-example', [...reset,
                                         'mochaTest:example',
-                                        'copy:db',
+                                        ...reset,
                                         'mochaTest:example2']);
     grunt.registerTask('test-all', ['test', 'test-multi', 'test-example']);
     grunt.registerTask('coverage', ['exec:cover',
