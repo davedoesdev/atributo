@@ -652,4 +652,6 @@ describe(`atributo (${db_type})`, function ()
     {
         ao.close(cb);
     });
+
+    // TODO: Check what happens if allocate same job
 });

@@ -105,9 +105,18 @@ class Atributo extends EventEmitter
             [
                 cb =>
                 {
-                    this._run('INSERT OR IGNORE INTO instances VALUES ($1, 1);',
-                              [instance_id],
-                              cb);
+                    let sql;
+                    switch (this._options.db_type)
+                    {
+                    case 'sqlite':
+                        sql = 'INSERT OR IGNORE INTO instances VALUES ($1, $2);';
+                        break;
+
+                    case 'pg':
+                        sql = 'INSERT INTO instances VALUES ($1, $2) ON CONFLICT DO NOTHING;'
+                        break;
+                    }
+                    this._run(sql, [instance_id, this._true], cb);
                 },
                 cb =>
                 {
@@ -137,9 +146,18 @@ class Atributo extends EventEmitter
             let statements = [
                 cb =>
                 {
-                    this._run('INSERT OR IGNORE INTO instances VALUES ($1, 0);',
-                              [instance_id],
-                              cb);
+                    let sql;
+                    switch (this._options.db_type)
+                    {
+                    case 'sqlite':
+                        sql = 'INSERT OR IGNORE INTO instances VALUES ($1, $2);';
+                        break;
+
+                    case 'pg':
+                        sql = 'INSERT INTO instances VALUES ($1, $2) ON CONFLICT DO NOTHING;'
+                        break;
+                    }
+                    this._run(sql, [instance_id, this._false], cb);
                 },
                 cb =>
                 {
@@ -292,7 +310,18 @@ class Atributo extends EventEmitter
             },
             (r, cb) =>
             {
-                cb(null, r['count(*)'] > 0);
+                let key;
+                switch (this._options.db_type)
+                {
+                case 'sqlite':
+                    key = 'count(*)';
+                    break;
+
+                case 'pg':
+                    key = 'count';
+                    break;
+                }
+                cb(null, r[key] > 0);
             }
         ], cb), this._busy(cb, () => this.has_jobs(instance_id, cb)));
     }
@@ -409,7 +438,7 @@ class Atributo extends EventEmitter
             break;
 
         case 'pg':
-            this._db.query(sql, values, cb);
+            this._db.query(sql, values, iferr(cb, () => cb()));
             break;
         }
     }
