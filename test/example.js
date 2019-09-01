@@ -1,9 +1,10 @@
 const { Atributo } = require('atributo'),
       async = require('async'),
-      assert = require('assert');
+      assert = require('assert'),
+      { ao_options } = require('./db_type');
 
 // Open the database file
-new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
+new Atributo(ao_options).on('ready', function () {
     async.waterfall([
 
         // Make instances available

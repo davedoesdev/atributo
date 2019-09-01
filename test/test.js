@@ -637,7 +637,7 @@ describe(`atributo (${db_type_name})`, function ()
                     {
                         case 1:
                             err = new Error();
-                            err.code = 'SQLITE_BUSY';
+                            err.code = this._busy_code;
                             super._busy(f, retry, block)(err, ...args);
                             break;
 

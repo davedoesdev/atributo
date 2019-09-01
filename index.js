@@ -38,7 +38,7 @@ class Atributo extends EventEmitter
             this._db.on('close', () => this.emit('close'));
             this._true = 1;
             this._false = 0;
-            this._busy_code = 'E_BUSY';
+            this._busy_code = 'SQLITE_BUSY';
             break;
 
         case 'pg':

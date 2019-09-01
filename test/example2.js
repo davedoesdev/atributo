@@ -1,6 +1,7 @@
 const { Atributo } = require('atributo'),
       async = require('async'),
-      assert = require('assert');
+      assert = require('assert'),
+      { ao_options } = require('./db_type');
 
 class ExampleAtributo extends Atributo
 {
@@ -31,10 +32,9 @@ class ExampleAtributo extends Atributo
 }
 
 async.times(2, (i, cb) => {
-    new ExampleAtributo({
-        db_filename: 'atributo.sqlite3',
+    new ExampleAtributo(Object.assign({
         instance_id: `instance${i}`
-    }).on('ready', function () {
+    }, ao_options)).on('ready', function () {
         cb(null, this);
     });
 }, (err, [ao0, ao1]) => {
