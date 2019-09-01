@@ -1,10 +1,9 @@
 const { Atributo } = require('atributo'),
       async = require('async'),
-      assert = require('assert'),
-      { ao_options } = require('./db_type');
+      assert = require('assert');
 
 // Open the database file
-new Atributo(ao_options).on('ready', function () {
+new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
     async.waterfall([
 
         // Make instances available
@@ -67,6 +66,7 @@ new Atributo(ao_options).on('ready', function () {
         // Check instance is unavailable
         cb => this.instances(cb),
         (instances, cb) => {
+            instances.sort((x, y) => x.id > y.id ? 1 : x.id < y.id ? -1 : 0);
             assert.deepStrictEqual(instances, [
                 { id: 'instance0', available: false },
                 { id: 'instance1', available: true }

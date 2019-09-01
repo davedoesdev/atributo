@@ -1,6 +1,7 @@
 'use strict';
 
-const path = require('path');
+const path = require('path'),
+      { ao_options } = require('./db_type');
 
 module.exports = function (name, file)
 {
@@ -18,8 +19,7 @@ module.exports = function (name, file)
             constructor(options)
             {
                 count += 1;
-                options.db_filename = path.join(__dirname, options.db_filename);
-                super(options);
+                super(Object.assign(options, ao_options));
             }
 
             close(cb)
