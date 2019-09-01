@@ -35,7 +35,7 @@ module.exports = function (num_tasks)
             },
             function (ao, cb)
             {
-                setTimeout(() => cb(null, ao), 10 * 1000);
+                setTimeout(() => cb(null, ao), 20 * 1000);
             },
             function (ao, cb)
             {
