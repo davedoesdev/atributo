@@ -22,13 +22,13 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Allocate jobs
         cb => this.allocate('job0', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance1');
             cb();
         },
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -75,7 +75,7 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Check existing allocation to unavailable instance
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted); // <2> 
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -86,7 +86,7 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Re-allocate job
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance1');
             cb();

@@ -4,7 +4,8 @@ const path = require('path'),
       async = require('async'),
       expect = require('chai').expect,
       Atributo = require('..').Atributo,
-      iferr = require('iferr');
+      iferr = require('iferr'),
+      { ao_options } = require('./db_type');
 
 module.exports = function (num_allocations, allocations_limit)
 {
@@ -14,11 +15,7 @@ module.exports = function (num_allocations, allocations_limit)
         [
             function (cb)
             {
-                new Atributo(
-                {
-                    db_filename: path.join(__dirname, 'atributo.sqlite3')
-                })
-                .on('ready', function ()
+                new Atributo(ao_options).on('ready', function ()
                 {
                     cb(null, this);
                 })

@@ -51,13 +51,13 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Allocate jobs
         cb => this.allocate('job0', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance1');
             cb();
         },
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -104,7 +104,7 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Check existing allocation to unavailable instance
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted); // <2> 
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -115,7 +115,7 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 
         // Re-allocate job
         cb => this.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted); // <1>
             assert.strictEqual(instance_id, 'instance1');
             cb();
@@ -174,11 +174,11 @@ class ExampleAtributo extends Atributo
     }
 
     allocate(job_id, cb) {
-        super.allocate(job_id, (err, persisted, instance_id) => {
+        super.allocate(job_id, (err, instance_id, persisted) => {
             if (persisted) {
                 // first allocation on our instance so start job
             }
-            cb(err, persisted, instance_id);
+            cb(err, instance_id, persisted);
         });
     }
 
@@ -228,7 +228,7 @@ async.times(2, (i, cb) => {
 
         // Job allocated on instance0 to instance1 should not be persisted
         cb => ao0.allocate('job0', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted);
             assert.strictEqual(instance_id, 'instance1');
             cb();
@@ -241,7 +241,7 @@ async.times(2, (i, cb) => {
 
         // Job allocated on instance1 to instance1 should be persisted
         cb => ao1.allocate('job0', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, allocated, cb) => {
             assert(persisted);
             assert.strictEqual(instance_id, 'instance1');
             cb();
@@ -254,7 +254,7 @@ async.times(2, (i, cb) => {
 
         // Job allocated on instance1 to instance0 should not be persisted
         cb => ao1.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted);
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -267,7 +267,7 @@ async.times(2, (i, cb) => {
 
         // Job allocated on instance0 to instance0 should be persisted
         cb => ao0.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(persisted);
             assert.strictEqual(instance_id, 'instance0');
             cb();
@@ -280,13 +280,13 @@ async.times(2, (i, cb) => {
 
         // Jobs should only be persisted once
         cb => ao1.allocate('job0', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted);
             assert.strictEqual(instance_id, 'instance1');
             cb();
         },
         cb => ao0.allocate('job1', cb),
-        (persisted, instance_id, cb) => {
+        (instance_id, persisted, cb) => {
             assert(!persisted);
             assert.strictEqual(instance_id, 'instance0');
             cb();

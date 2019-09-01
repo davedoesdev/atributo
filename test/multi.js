@@ -5,6 +5,7 @@ const path = require('path'),
       expect = require('chai').expect,
       Atributo = require('..').Atributo,
       iferr = require('iferr'),
+      { db_type_name, ao_options } = require('./db_type'),
       num_tasks = 5,
       num_allocations = 20,
       allocations_limit = 20;
@@ -12,7 +13,7 @@ const path = require('path'),
 module.exports = function(name, make_launch_task)
 {
 
-describe(name, function ()
+describe(`${name} (${db_type_name})`, function ()
 {
     this.timeout(10 * 60 * 1000);
 
@@ -32,11 +33,7 @@ describe(name, function ()
         {
             timeout = setTimeout(() =>
             {
-                new Atributo(
-                {
-                    db_filename: path.join(__dirname, 'atributo.sqlite3')
-                })
-                .on('ready', function ()
+                new Atributo(ao_options).on('ready', function ()
                 {
                     let instance = 'marker' + Math.floor(Math.random() * num_tasks);
                     this.unavailable(instance, Math.random() < 0.5, iferr(cb, () =>

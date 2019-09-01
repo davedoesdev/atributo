@@ -236,7 +236,7 @@ class Atributo extends EventEmitter
             {
                 if (r !== undefined)
                 {
-                    return cb(null, false, r.instance);
+                    return cb(null, r.instance, false);
                 }
 
                 this._queue.unshift(cb => 
@@ -254,11 +254,11 @@ class Atributo extends EventEmitter
                     this._queue.unshift(cb =>
                     {
                         this._allocate(job_id, r.map(row => row.id), cb);
-                    }, iferr(cb, (persist, instance_id) =>
+                    }, iferr(cb, (instance_id, persist) =>
                     {
                         if (!persist)
                         {
-                            return cb(null, false, instance_id);
+                            return cb(null, instance_id, false);
                         }
 
                         this._queue.unshift(cb =>
@@ -268,7 +268,7 @@ class Atributo extends EventEmitter
                                       cb);
                         }, iferr(cb, r =>
                         {
-                            cb(null, true, instance_id);
+                            cb(null, instance_id, true);
                         }));
                     }));
                 }));
@@ -486,7 +486,7 @@ class Atributo extends EventEmitter
         let h = crypto.createHash('md5'); // not for security, just mapping
         h.update(job_id);
         let buf = h.digest();
-        cb(null, true, instance_ids[buf.readUInt32BE(0) % instance_ids.length]);
+        cb(null, instance_ids[buf.readUInt32BE(0) % instance_ids.length], true);
     }
 }
 

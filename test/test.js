@@ -6,21 +6,9 @@ const path = require('path'),
       expect = require('chai').expect,
       sqlite3 = require('sqlite3'),
       Atributo = require('..').Atributo,
-      config = require('config');
+      { db_type, db_type_name, ao_options } = require('./db_type');
 
-const db_type = process.env.ATRIBUTO_TEST_DB_TYPE;
-
-const ao_options = Object.assign(
-{
-    db_filename: path.join(__dirname, 'atributo.sqlite3')
-}, config);
-
-if (db_type)
-{
-    ao_options.db_type = db_type;
-}
-
-describe(`atributo (${db_type || 'sqlite'})`, function ()
+describe(`atributo (${db_type_name})`, function ()
 {
     let ao;
 
@@ -56,7 +44,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
 
     it('should allocate to instance', function (cb)
     {
-        ao.allocate('bar', function (err, persisted, instance_id)
+        ao.allocate('bar', function (err, instance_id, persisted)
         {
             if (err) { return cb(err); }
             expect(persisted).to.be.true;
@@ -73,7 +61,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
     it('should allocate to different instance', function (cb)
     {
         // bar2 just happens to hash to new instance
-        ao.allocate('bar2', function (err, persisted, instance_id)
+        ao.allocate('bar2', function (err, instance_id, persisted)
         {
             if (err) { return cb(err); }
             expect(persisted).to.be.true;
@@ -88,7 +76,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
         [
             cb =>
             {
-                ao.allocate('bar5', function (err, persisted, instance_id)
+                ao.allocate('bar5', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.true;
@@ -98,7 +86,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
             },
             cb =>
             {
-                ao.allocate('bar3', function (err, persisted, instance_id)
+                ao.allocate('bar3', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.true;
@@ -120,7 +108,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
         [
             cb =>
             {
-                ao.allocate('bar', function (err, persisted, instance_id)
+                ao.allocate('bar', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.false;
@@ -130,7 +118,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
             },
             cb =>
             {
-                ao.allocate('bar2', function (err, persisted, instance_id)
+                ao.allocate('bar2', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.false;
@@ -140,7 +128,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
             },
             cb =>
             {
-                ao.allocate('bar5', function (err, persisted, instance_id)
+                ao.allocate('bar5', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.false;
@@ -150,7 +138,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
             },
             cb =>
             {
-                ao.allocate('bar3', function (err, persisted, instance_id)
+                ao.allocate('bar3', function (err, instance_id, persisted)
                 {
                     if (err) { return cb(err); }
                     expect(persisted).to.be.false;
@@ -240,17 +228,17 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
                         ao.deallocate('bar4', function (err)
                         {
                             if (err) { return cb(err); }
-                            ao.allocate('bar5', function (err, persisted, instance_id)
+                            ao.allocate('bar5', function (err, instance_id, persisted)
                             {
                                 if (err) { return cb(err); }
                                 expect(persisted).to.be.true;
                                 expect(instance_id).to.equal('foo3');
-                                ao.allocate('bar2', function (err, persisted, instance_id)
+                                ao.allocate('bar2', function (err, instance_id, persisted)
                                 {
                                     if (err) { return cb(err); }
                                     expect(persisted).to.be.true;
                                     expect(instance_id).to.equal('foo3');
-                                    ao.allocate('bar9', function (err, persisted, instance_id)
+                                    ao.allocate('bar9', function (err, instance_id, persisted)
                                     {
                                         if (err) { return cb(err); }
                                         expect(persisted).to.be.true;
@@ -279,7 +267,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
                 {
                     if (err) { return cb(err); }
                     expect(v).to.be.true;
-                    ao.allocate('bar9', function (err, persisted, instance_id)
+                    ao.allocate('bar9', function (err, instance_id, persisted)
                     {
                         if (err) { return cb(err); }
                         expect(persisted).to.be.false;
@@ -287,7 +275,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
                         ao.deallocate('bar9', function (err)
                         {
                             if (err) { return cb(err); }
-                            ao.allocate('bar9', function (err, persisted, instance_id)
+                            ao.allocate('bar9', function (err, instance_id, persisted)
                             {
                                 if (err) { return cb(err); }
                                 expect(persisted).to.be.true;
@@ -313,7 +301,7 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
                 {
                     if (err) { return cb(err); }
                     expect(v).to.be.false;
-                    ao.allocate('bar9', function (err, persisted, instance_id)
+                    ao.allocate('bar9', function (err, instance_id, persisted)
                     {
                         if (err) { return cb(err); }
                         expect(persisted).to.be.true;
@@ -342,19 +330,19 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
                 _allocate(job_id, instance_ids, cb)
                 {
                     this._test_allocate_called = true;
-                    super._allocate(job_id, instance_ids, function (err, persisted, instance_id)
+                    super._allocate(job_id, instance_ids, function (err, instance_id, persisted)
                     {
                         if (err) { return cb(err); }
                         expect(persisted).to.be.true;
                         expect(instance_id).to.equal('foo3');
-                        cb(null, false, instance_id);
+                        cb(null, instance_id, false);
                     });
                 }
             }
 
             new TestAtributo(ao_options).on('ready', function ()
             {
-                this.allocate('bar11', (err, persisted, instance_id) =>
+                this.allocate('bar11', (err, instance_id, persisted) =>
                 {
                     expect(this._test_allocate_called).to.be.true;
                     expect(persisted).to.be.false;
@@ -699,7 +687,4 @@ describe(`atributo (${db_type || 'sqlite'})`, function ()
     {
         ao.close(cb);
     });
-
-    // TODO: Check what happens if allocate same job
-    // pass on errors for pg
 });
