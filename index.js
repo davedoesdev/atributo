@@ -38,6 +38,7 @@ class Atributo extends EventEmitter
             this._db.on('close', () => this.emit('close'));
             this._true = 1;
             this._false = 0;
+            this._busy_code = 'E_BUSY';
             break;
 
         case 'pg':
@@ -53,6 +54,7 @@ class Atributo extends EventEmitter
             this._db.on('end', () => this.emit('close'));
             this._true = true;
             this._false = false;
+            this._busy_code = '40001';
             break;
 
         default:
@@ -399,8 +401,21 @@ class Atributo extends EventEmitter
 
     _in_transaction(cb, f)
     {
+        let isolation_level;
+
+        switch (this._options.db_type)
+        {
+        case 'sqlite':
+            isolation_level = ''; // SQLite transactions are serializable
+            break;
+
+        case 'pg':
+            isolation_level = 'ISOLATION LEVEL SERIALIZABLE';
+            break;
+        }
+
         this._queue.push(cb2 =>
-            this._run('BEGIN TRANSACTION', [], cb2),
+            this._run(`BEGIN TRANSACTION ${isolation_level}`, [], cb2),
             iferr(cb, () => f(this._end_transaction(cb))));
     }
 
@@ -408,7 +423,7 @@ class Atributo extends EventEmitter
     {
         return (err, ...args) =>
         {
-            if (err && (err.code === 'SQLITE_BUSY'))
+            if (err && (err.code === this._busy_code))
             {
                 if (block)
                 {
