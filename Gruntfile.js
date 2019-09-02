@@ -3,7 +3,8 @@
 const path = require('path'),
       mod_path = path.join('.', 'node_modules'),
       bin_path = path.join(mod_path, '.bin'),
-      nyc_path = path.join(bin_path, 'nyc');
+      nyc_path = path.join(bin_path, 'nyc'),
+      test_path = path.resolve('test') + path.sep;
 
 let grunt_path;
 
@@ -41,7 +42,9 @@ module.exports = function (grunt)
                 src: 'test/run_example2.js'
             },
             options: {
-                bail: true
+                bail: true,
+                clearRequireCache: true,
+                clearCacheFilter: f => !f.startsWith(test_path)
             }
         },
 
