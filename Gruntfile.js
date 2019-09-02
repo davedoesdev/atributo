@@ -52,6 +52,20 @@ module.exports = function (grunt)
             }
         },
 
+        env: {
+            pg: {
+                // Note: On Ubuntu, this requires adding a mapping to
+                // /etc/postgresql/11/main/pg_ident.conf, for example:
+                //
+                // foo foo postgres
+                //
+                // and specifying the map in etc/postgresql/11/main/pg_hba.conf:
+                //
+                // local all postgres peer map=moose
+                ATRIBUTO_TEST_DB_TYPE: 'pg'
+            }
+        },
+
         exec: {
             cover: {
                 cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test-all"
@@ -78,7 +92,7 @@ module.exports = function (grunt)
             },
 
             clear_pg: {
-                cmd: "psql -d atributo -c 'DELETE FROM allocations;' -c 'DELETE from instances;'"
+                cmd: "psql -U postgres -d atributo -c 'DELETE FROM allocations;' -c 'DELETE from instances;'"
             }
         }
     });
@@ -87,23 +101,41 @@ module.exports = function (grunt)
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-env');
 
-    const reset = [
-        process.env.ATRIBUTO_TEST_DB_TYPE === 'pg' ? 'exec:clear_pg' : 'copy:sqlite_db'
-    ];
+    grunt.registerTask('reset', 'Reset DB', function ()
+    {
+        let task;
+
+        switch (process.env.ATRIBUTO_TEST_DB_TYPE)
+        {
+        case 'pg':
+            task = 'exec:clear_pg';
+            break;
+
+        default:
+            task = 'copy:sqlite_db'
+            break;
+        }
+
+        grunt.task.run(task);
+    });
 
     grunt.registerTask('lint', 'eslint');
-    grunt.registerTask('test', [...reset,
+    grunt.registerTask('test', ['reset',
                                 'mochaTest:default']);
-    grunt.registerTask('test-multi', [...reset,
+    grunt.registerTask('test-multi', ['reset',
                                       'mochaTest:multi_sp',
-                                      ...reset,
+                                      'reset',
                                       'mochaTest:multi_mp']);
-    grunt.registerTask('test-example', [...reset,
+    grunt.registerTask('test-example', ['reset',
                                         'mochaTest:example',
-                                        ...reset,
+                                        'reset',
                                         'mochaTest:example2']);
     grunt.registerTask('test-all', ['test', 'test-multi', 'test-example']);
+    grunt.registerTask('test-all-db', ['test-all',
+                                       'env:pg',
+                                       'test-all']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);
