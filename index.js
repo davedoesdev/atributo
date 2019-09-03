@@ -386,14 +386,18 @@ class Atributo extends EventEmitter
                               true));
             }
 
+            const cb2 = err => cb(err, ...args);
+
             this._queue.unshift(cb =>
             {
                 this._run('END TRANSACTION',
                           [],
                           cb);
-            }, this._busy(err => cb(err, ...args),
-                          () => f(err, ...args),
-                          true));
+            }, this._options.db_type === 'sqlite' ?
+                this._busy(cb2,
+                           () => f(err, ...args),
+                           true) :
+                cb2);
         };
 
         return f;

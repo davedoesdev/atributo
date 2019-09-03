@@ -26,13 +26,20 @@ describe(`${name} (${db_type_name})`, function ()
 
     it('should be able to make unavailable while allocating', function (cb)
     {
-        let timeout,
+        let done = false,
+            timeout = null,
             made_unavailable = false;
 
         function next()
         {
+            if (done)
+            {
+                return cb();
+            }
+
             timeout = setTimeout(() =>
             {
+                timeout = null;
                 new Atributo(ao_options).on('ready', function ()
                 {
                     let instance = 'marker' + Math.floor(Math.random() * num_tasks);
@@ -41,6 +48,7 @@ describe(`${name} (${db_type_name})`, function ()
                         made_unavailable = true;
                         timeout = setTimeout(() =>
                         {
+                            timeout = null;
                             this.available(instance, iferr(cb, () =>
                             {
                                 this.close(next);
@@ -60,8 +68,12 @@ describe(`${name} (${db_type_name})`, function ()
         async.times(num_tasks, launch, iferr(cb, () =>
         {
             expect(made_unavailable).to.be.true;
-            clearTimeout(timeout);
-            cb();
+            done = true;
+            if (timeout)
+            {
+                clearTimeout(timeout);
+                cb();
+            }
         }));
     });
 });

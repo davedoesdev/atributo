@@ -35,6 +35,7 @@ module.exports = function (num_tasks)
             },
             function (ao, cb)
             {
+                // Let other tasks make their allocations
                 setTimeout(() => cb(null, ao), 20 * 1000);
             },
             function (ao, cb)

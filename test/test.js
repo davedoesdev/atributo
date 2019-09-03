@@ -196,11 +196,11 @@ describe(`atributo (${db_type_name})`, function ()
         ao.jobs('foo', function (err, job_ids)
         {
             if (err) { return cb(err); }
-            expect(job_ids).to.eql(['bar', 'bar3']);
+            expect(job_ids.sort()).to.eql(['bar', 'bar3']);
             ao.jobs('foo2', function (err, job_ids)
             {
                 if (err) { return cb(err); }
-                expect(job_ids).to.eql(['bar2', 'bar5']);
+                expect(job_ids.sort()).to.eql(['bar2', 'bar5']);
                 ao.jobs('foo3', function (err, job_ids)
                 {
                     if (err) { return cb(err); }
@@ -363,7 +363,7 @@ describe(`atributo (${db_type_name})`, function ()
         ao.jobs('foo', function (err, job_ids)
         {
             if (err) { return cb(err); }
-            expect(job_ids).to.eql(['bar', 'bar3', 'bar9']);
+            expect(job_ids.sort()).to.eql(['bar', 'bar3', 'bar9']);
             ao.jobs('foo2', function (err, job_ids)
             {
                 if (err) { return cb(err); }
@@ -383,6 +383,7 @@ describe(`atributo (${db_type_name})`, function ()
         ao.instances(function (err, instances)
         {
             if (err) { return cb(err); }
+            instances.sort((x, y) => x.id > y.id ? 1 : x.id < y.id ? -1 : 0);
             expect(instances).to.eql(
             [
                 { id: 'foo', available: true },
@@ -471,7 +472,7 @@ describe(`atributo (${db_type_name})`, function ()
                             expect(err.code).to.equal('SQLITE_BUSY');
                             this.jobs('foo', iferr(cb, job_ids =>
                             {
-                                expect(job_ids).to.eql(['bar', 'bar3', 'bar9']);
+                                expect(job_ids.sort()).to.eql(['bar', 'bar3', 'bar9']);
                                 retry();
                             }));
                             break;
@@ -522,6 +523,7 @@ describe(`atributo (${db_type_name})`, function ()
                 this.instances(iferr(cb, instances =>
                 {
                     expect(this._busy_count).to.equal(8);
+                    instances.sort((x, y) => x.id > y.id ? 1 : x.id < y.id ? -1 : 0);
                     expect(instances).to.eql(
                     [
                         { id: 'foo', available: true },

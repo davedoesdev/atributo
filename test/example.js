@@ -13,6 +13,7 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
         // List instances
         cb => this.instances(cb),
         (instances, cb) => {
+            instances.sort((x, y) => x.id > y.id ? 1 : x.id < y.id ? -1 : 0);
             assert.deepStrictEqual(instances, [
                 { id: 'instance0', available: true },
                 { id: 'instance1', available: true }
