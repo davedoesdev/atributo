@@ -95,7 +95,7 @@ module.exports = function (grunt)
             },
 
             clear_pg: {
-                cmd: "psql -U postgres -d atributo -c 'DELETE FROM allocations;' -c 'DELETE from instances;'"
+                cmd: "psql -U postgres -d atributo -c \"DELETE FROM allocations;\" -c \"DELETE from instances;\""
             }
         }
     });
