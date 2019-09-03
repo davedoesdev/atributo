@@ -18,6 +18,11 @@ describe(`atributo (${db_type_name})`, function ()
         ao.on('ready', cb);
     });
 
+    it('should throw error for unknown database type', function ()
+    {
+        expect(() => new Atributo({ db_type: 'foo' })).to.throw('invalid database type: foo');
+    });
+
     it('should have no jobs by default', function (cb)
     {
         ao.has_jobs('foo', function (err, v)
