@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           CXX: g++-6
-          NODE_CONFIG: '{"db":"postgresql://postgres@localhost/atributo"}'
+          NODE_CONFIG: '{"db":{"host":"localhost","database":"atributo","migrations-dir":"pg-migrations","user":"postgres"}}'
       - image: circleci/postgres:11.5-alpine
         environment:
           POSTGRES_USER: postgres
