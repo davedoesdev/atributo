@@ -6,6 +6,9 @@ jobs:
         environment:
           CXX: g++-6
           NODE_CONFIG: '{"db":{"host":"localhost","database":"atributo","migrations-dir":"pg-migrations","user":"postgres"}}'
+          PGHOST: localhost
+          PGDATABASE: atributo
+          PGUSER: postgres
       - image: circleci/postgres:11.5-alpine
         environment:
           POSTGRES_USER: postgres
