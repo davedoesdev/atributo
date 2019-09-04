@@ -2,9 +2,13 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:12.8.1
+      - image: circleci/node:12.10.0
         environment:
           CXX: g++-6
+      - image: circleci/postgres:11.5-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: atributo
     steps:
       - checkout
       - run:
@@ -16,4 +20,6 @@ jobs:
             npm install
       - run:
           name: test
-          command: ./node_modules/.bin/grunt lint coverage coveralls
+          command:
+            - npm run migrate up
+            - ./node_modules/.bin/grunt lint coverage coveralls

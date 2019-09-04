@@ -64,7 +64,7 @@ module.exports = function (grunt)
                 //
                 // and specifying the map in etc/postgresql/11/main/pg_hba.conf:
                 //
-                // local all postgres peer map=moose
+                // local all postgres peer map=foo
                 ATRIBUTO_TEST_DB_TYPE: 'pg'
             }
         },
