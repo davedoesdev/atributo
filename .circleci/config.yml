@@ -5,6 +5,7 @@ jobs:
       - image: circleci/node:12.9.1
         environment:
           CXX: g++-6
+          NODE_CONFIG: '{"db":"postgresql://postgres@localhost/qlobber-pg"}'
       - image: circleci/postgres:11.5-alpine
         environment:
           POSTGRES_USER: postgres
