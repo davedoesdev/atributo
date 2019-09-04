@@ -21,5 +21,5 @@ jobs:
       - run:
           name: test
           command: |
-            npm run migrate up
+            npm run pg-migrate up
             ./node_modules/.bin/grunt lint coverage coveralls
