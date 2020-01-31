@@ -38,6 +38,7 @@
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
+    "config": "^3.2.5",
     "coveralls": "^3.0.9",
     "documentation": "^12.1.4",
     "grunt": "^1.0.4",
