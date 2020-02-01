@@ -53,11 +53,11 @@ describe(`${name} (${db_type_name})`, function ()
                             {
                                 this.close(next);
                             }));
-                        }, 500);
+                        }, 250);
                     }));
                 })
                 .on('error', cb);
-            }, 1000);
+            }, 500);
         };
 
         next();

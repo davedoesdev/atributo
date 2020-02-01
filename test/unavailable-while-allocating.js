@@ -33,7 +33,7 @@ module.exports = function (num_allocations, allocations_limit)
                         },
                         cb =>
                         {
-                            setTimeout(cb, Math.floor(Math.random() * 10) * 1000);
+                            setTimeout(cb, Math.floor(Math.random() * 5) * 1000);
                         },
                         cb =>
                         {
