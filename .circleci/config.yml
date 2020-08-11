@@ -13,6 +13,7 @@ jobs:
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: atributo
+          POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
       - run:
