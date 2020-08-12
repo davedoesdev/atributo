@@ -2,9 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:14.7.0
+      - image: circleci/node:14.7.0-buster
         environment:
-          CXX: g++-6
           NODE_CONFIG: '{"db":{"host":"localhost","database":"atributo","migrations-dir":"pg-migrations","user":"postgres"}}'
           PGHOST: localhost
           PGDATABASE: atributo
@@ -19,9 +18,8 @@ jobs:
       - run:
           name: install
           command: |
-            sudo bash -c 'echo "deb http://ftp.us.debian.org/debian unstable main contrib non-free" >> /etc/apt/sources.list.d/unstable.list'
-            sudo apt-get -y update
-            sudo apt-get -y install -t unstable g++-6 lcov postgresql-client
+            sudo apt -y update
+            sudo apt -y install lcov postgresql-client
             npm install
       - run:
           name: test
