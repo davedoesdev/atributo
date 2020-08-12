@@ -19,7 +19,7 @@ jobs:
           name: install
           command: |
             sudo apt -y update
-            sudo apt -y install lcov postgresql-client
+            sudo apt -y install lcov postgresql-client sqlite3
             npm install
       - run:
           name: test
