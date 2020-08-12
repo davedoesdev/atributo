@@ -11,7 +11,7 @@ setup('multi (separate processes)', (module, ...args) =>
         cp.on('error', cb);
         cp.on('exit', code => 
         {
-            cb(code === 0 ? null : new Error('error in child'))
+            cb(code === 0 ? null : new Error(`error ${code} in child`))
         });
     };
 });
