@@ -9,9 +9,9 @@ setup('multi (separate processes)', (module, ...args) =>
     {
         let cp = child_process.fork(module, [Buffer.from(JSON.stringify([i, ...args])).toString('hex')]);
         cp.on('error', cb);
-        cp.on('exit', code => 
+        cp.on('exit', (code, signal) => 
         {
-            cb(code === 0 ? null : new Error(`error ${code} in child`))
+            cb(code === 0 ? null : new Error(`error ${code}:${signal} in child`))
         });
     };
 });
