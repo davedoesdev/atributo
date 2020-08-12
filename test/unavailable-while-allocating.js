@@ -11,12 +11,12 @@ module.exports = function (num_allocations, allocations_limit)
 {
     return function (i, cb)
     {
-    console.log("ONE");
+    console.log(process.pid, "ONE");
         async.waterfall(
         [
             function (cb)
             {
-    console.log("TWO");
+    console.log(process.pid, "TWO");
                 new Atributo(ao_options).on('ready', function ()
                 {
                     cb(null, this);
@@ -25,7 +25,7 @@ module.exports = function (num_allocations, allocations_limit)
             },
             function (ao, cb)
             {
-    console.log("THREE");
+    console.log(process.pid, "THREE");
                 async.timesLimit(num_allocations, allocations_limit, function (j, cb)
                 {
                     async.series(
@@ -48,7 +48,7 @@ module.exports = function (num_allocations, allocations_limit)
             },
             function (ao, cb)
             {
-    console.log("FOUR");
+    console.log(process.pid, "FOUR");
                 ao.close(cb);
             }
         ], cb);
@@ -58,10 +58,10 @@ module.exports = function (num_allocations, allocations_limit)
 if (require.main === module)
 {
     let [i, num_allocations, allocations_limit] = JSON.parse(Buffer.from(process.argv[2], 'hex'));
-    console.log("STARTING");
+    console.log(process.pid, "STARTING");
     module.exports(num_allocations, allocations_limit)(i, err =>
     {
-        console.log("DONE", err);
+        console.log(process.pid, "DONE", err);
         if (err)
         {
             throw err;
