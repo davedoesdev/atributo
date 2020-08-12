@@ -11,10 +11,12 @@ module.exports = function (num_allocations, allocations_limit)
 {
     return function (i, cb)
     {
+    console.log("ONE");
         async.waterfall(
         [
             function (cb)
             {
+    console.log("TWO");
                 new Atributo(ao_options).on('ready', function ()
                 {
                     cb(null, this);
@@ -23,6 +25,7 @@ module.exports = function (num_allocations, allocations_limit)
             },
             function (ao, cb)
             {
+    console.log("THREE");
                 async.timesLimit(num_allocations, allocations_limit, function (j, cb)
                 {
                     async.series(
@@ -45,6 +48,7 @@ module.exports = function (num_allocations, allocations_limit)
             },
             function (ao, cb)
             {
+    console.log("FOUR");
                 ao.close(cb);
             }
         ], cb);
