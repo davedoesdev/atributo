@@ -33,7 +33,7 @@
     "iferr": "^1.0.2",
     "node-pg-migrate": "^5.5.0",
     "pg": "^8.3.0",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "mohd-akram/node-sqlite3#fix-segfaults"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
