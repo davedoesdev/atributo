@@ -22,6 +22,12 @@ jobs:
             sudo apt -y install lcov postgresql-client
             npm install
       - run:
+          name: ulimit
+          command: |
+            ulimit -c
+            ulimit -c ulimited
+            ulimit -c
+      - run:
           name: test
           command: |
             npm run pg-migrate up
