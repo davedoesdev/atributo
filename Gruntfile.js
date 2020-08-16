@@ -17,7 +17,8 @@ process.listeners = function(evname) {
 const path = require('path'),
       mod_path = path.join('.', 'node_modules'),
       bin_path = path.join(mod_path, '.bin'),
-      nyc_path = path.join(bin_path, 'nyc'),
+      c8_path = path.join(bin_path, 'c8'),
+      c8_cmd = `${c8_path} -x Gruntfile.js -x '${path.join('test', '**')}'`,
       test_path = path.resolve('test') + path.sep;
 
 let grunt_path;
@@ -91,15 +92,15 @@ module.exports = function (grunt)
 
         exec: {
             cover: {
-                cmd: nyc_path + " -x Gruntfile.js -x \"" + path.join('test', '**') + "\" node " + grunt_path + " test-all-db"
+                cmd: `${c8_cmd} node ${grunt_path} test-all-db"`
             },
 
             cover_report: {
-                cmd: nyc_path + ' report -r lcov'
+                cmd: `${c8_cmd} report -r lcov`
             },
 
             cover_check: {
-                cmd: nyc_path + ' check-coverage --statements 100 --branches 100 --functions 100 --lines 100'
+                cmd: `${c8_cmd} check-coverage --statements 100 --branches 100 --functions 100 --lines 100`
             },
 
             coveralls: {
