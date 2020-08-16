@@ -1,5 +1,19 @@
 'use strict';
 
+// Work around for https://github.com/pghalliday/grunt-mocha-test/issues/90
+const orig_listeners = process.listeners;
+process.listeners = function(evname) {
+    const listeners = orig_listeners.call(this, evname);
+    if (evname === 'uncaughtException') {
+        const orig_forEach = listeners.forEach;
+        listeners.forEach = function (f) {
+            const names = new Set(orig_listeners.call(process, evname).map(f => f.name));
+            orig_forEach.call(this.filter(f => !names.has(f.name)), f);
+        };
+    }
+    return listeners;
+};
+
 const path = require('path'),
       mod_path = path.join('.', 'node_modules'),
       bin_path = path.join(mod_path, '.bin'),
