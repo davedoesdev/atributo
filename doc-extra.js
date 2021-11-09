@@ -54,10 +54,10 @@ exports._instancesCallback = function (err, instances) {};
 
  @callback allocateCallback
  @param {?Error} err - Error, if one occurred.
- @param {boolean} persisted - Whether the allocation was persisted to the database _in this call_. If the job was already allocated to an instance in the database, `persisted` will be `false`.
  @param {string} instance_id - The ID of the instance to which the job was allocated.
+ @param {boolean} persisted - Whether the allocation was persisted to the database _in this call_. If the job was already allocated to an instance in the database, `persisted` will be `false`.
  */
-exports._allocateCallback = function (err, persisted, instance_id) {};
+exports._allocateCallback = function (err, instance_id, persisted) {};
 
 /**
  Callback type for job deallocation.
@@ -101,7 +101,7 @@ exports._instanceCallback = function (err, instance_id) {};
 
  @callback _allocateCallback
  @param {?Error} err - Error, if one occurred.
- @param {boolean} persist - Whether the allocation should be persisted to the database.
  @param {string} instance_id - The instance ID to which the job should be allocated.
+ @param {boolean} persist - Whether the allocation should be persisted to the database.
  */
-exports.__allocateCallback = function (err, persist, instance_id) {};
+exports.__allocateCallback = function (err, instance_id, persist) {};

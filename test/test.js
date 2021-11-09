@@ -18,6 +18,11 @@ describe(`atributo (${db_type_name})`, function ()
         ao.on('ready', cb);
     });
 
+    after(function (cb)
+    {
+        ao.close(cb);
+    });
+
     it('should throw error for unknown database type', function ()
     {
         expect(() => new Atributo({ db_type: 'foo' })).to.throw('invalid database type: foo');
@@ -356,7 +361,7 @@ describe(`atributo (${db_type_name})`, function ()
                     {
                         if (err) { return cb(err); }
                         expect(v).to.be.false;
-                        cb();
+                        this.close(cb);
                     });
                 });
             });
@@ -688,10 +693,5 @@ describe(`atributo (${db_type_name})`, function ()
             this.on('close', cb);
             this.close();
         });
-    });
-
-    after(function (cb)
-    {
-        ao.close(cb);
     });
 });

@@ -1,36 +1,7 @@
 'use strict';
 
-// Work around for https://github.com/pghalliday/grunt-mocha-test/issues/90
-const orig_listeners = process.listeners;
-process.listeners = function(evname) {
-    const listeners = orig_listeners.call(this, evname);
-    if (evname === 'uncaughtException') {
-        const orig_forEach = listeners.forEach;
-        listeners.forEach = function (f) {
-            const names = new Set(orig_listeners.call(process, evname).map(f => f.name));
-            orig_forEach.call(this.filter(f => !names.has(f.name)), f);
-        };
-    }
-    return listeners;
-};
-
-const path = require('path'),
-      mod_path = path.join('.', 'node_modules'),
-      bin_path = path.join(mod_path, '.bin'),
-      c8_path = path.join(bin_path, 'c8'),
-      c8_cmd = `${c8_path} -x Gruntfile.js -x '${path.join('test', '**')}'`,
-      test_path = path.resolve('test') + path.sep;
-
-let grunt_path;
-
-if (process.platform === 'win32')
-{
-    grunt_path = path.join(mod_path, 'grunt', 'bin', 'grunt');
-}
-else
-{
-    grunt_path = path.join(bin_path, 'grunt');
-}
+const test_cmd = 'npx mocha --bail';
+const c8 = `npx c8 -x Gruntfile.js -x 'test/**'`;
 
 module.exports = function (grunt)
 {
@@ -44,29 +15,6 @@ module.exports = function (grunt)
                 'test/**/*.js' ,
                 '!test/node_modules/atributo.js'
             ]
-        },
-
-        mochaTest: {
-            default: {
-                src: 'test/test.js'
-            },
-            multi_sp: {
-                src: 'test/multi_sp.js'
-            },
-            multi_mp: {
-                src: 'test/multi_mp.js'
-            },
-            example: {
-                src: 'test/run_example.js'
-            },
-            example2: {
-                src: 'test/run_example2.js'
-            },
-            options: {
-                bail: true,
-                clearRequireCache: true,
-                clearCacheFilter: f => !f.startsWith(test_path)
-            }
         },
 
         copy: {
@@ -90,39 +38,53 @@ module.exports = function (grunt)
             }
         },
 
-        exec: {
+        exec: Object.fromEntries(Object.entries({
+            test: {
+                cmd: `${test_cmd} test/test.js`
+            },
+
+            test_multi_sp: {
+                cmd: `${test_cmd} test/multi_sp.js`
+            },
+
+            test_multi_mp: {
+                cmd: `${test_cmd} test/multi_mp.js`
+            },
+
+            test_example: {
+                cmd: `${test_cmd} test/run_example.js`
+            },
+
+            test_example2: {
+                cmd: `${test_cmd} test/run_example2.js`
+            },
+
             cover: {
-                cmd: `${c8_cmd} node ${grunt_path} test-all-db"`
+                cmd: `${c8} npx grunt test-all-db"`
             },
 
             cover_report: {
-                cmd: `${c8_cmd} report -r lcov`
+                cmd: `${c8} report -r lcov`
             },
 
             cover_check: {
-                cmd: `${c8_cmd} check-coverage --statements 100 --branches 100 --functions 100 --lines 100`
-            },
-
-            coveralls: {
-                cmd: 'cat coverage/lcov.info | ./node_modules/.bin/coveralls'
+                cmd: `${c8} check-coverage --statements 100 --branches 100 --functions 100 --lines 100`
             },
 
             documentation: {
-                cmd: './node_modules/.bin/documentation build -c documentation.yml -f html -o docs index.js doc-extra.js'
-            },
-
-            serve_documentation: {
-                cmd: './node_modules/.bin/documentation serve -w -c documentation.yml index.js doc-extra.js'
+                cmd: [
+                    'npx documentation build -c documentation.yml -f html -o docs index.js doc-extra.js',
+                    'asciidoc -b docbook -o - README.adoc | pandoc -f docbook -t gfm -o README.md'
+                ].join('&&')
             },
 
             clear_pg: {
                 cmd: "psql -U postgres -d atributo -c \"DELETE FROM allocations;\" -c \"DELETE from instances;\""
             }
-        }
+        }).map(([k, v]) => [k, { stdio: 'inherit', ...v }]))
     });
 
     grunt.loadNpmTasks('grunt-eslint');
-    grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-env');
@@ -147,24 +109,24 @@ module.exports = function (grunt)
 
     grunt.registerTask('lint', 'eslint');
     grunt.registerTask('test', ['reset',
-                                'mochaTest:default']);
+                                'exec:test']);
     grunt.registerTask('test-multi', ['reset',
-                                      'mochaTest:multi_sp',
+                                      'exec:test_multi_sp',
                                       'reset',
-                                      'mochaTest:multi_mp']);
+                                      'exec:test_multi_mp']);
     grunt.registerTask('test-example', ['reset',
-                                        'mochaTest:example',
+                                        'exec:test_example',
                                         'reset',
-                                        'mochaTest:example2']);
+                                        'exec:test_example2']);
     grunt.registerTask('test-all', ['test', 'test-multi', 'test-example']);
     grunt.registerTask('test-all-db', ['test-all',
                                        'env:pg',
                                        'test-all']);
+    grunt.registerTask('test-all-pg', ['env:pg', 'test-all']);
     grunt.registerTask('coverage', ['exec:cover',
                                     'exec:cover_report',
                                     'exec:cover_check']);
     grunt.registerTask('coveralls', 'exec:coveralls');
     grunt.registerTask('docs', 'exec:documentation');
-    grunt.registerTask('serve_docs', 'exec:serve_documentation');
     grunt.registerTask('default', ['lint', 'test']);
 };

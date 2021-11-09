@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>atributo 1.0.0 | Documentation</title>
+  <title>atributo 1.0.3 | Documentation</title>
   <meta name='description' content='Allocate jobs across a variable number of instances'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,11 +15,14 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>atributo</h3>
-          <div class='mb1'><code>1.0.0</code></div>
+          <div class='mb1'><code>1.0.3</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
             class='col12 block input'
+            spellcheck='false'
+            autocapitalize='off'
+            autocorrect='off'
             type='text' />
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
@@ -366,6 +369,8 @@
   
 
   
+
+  
     <div class='py1 quiet mt1 prose-big'>Instance Members</div>
     <div class="clearfix">
   
@@ -408,6 +413,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -478,6 +485,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -574,6 +583,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -618,6 +629,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -709,6 +722,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -762,6 +777,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -849,6 +866,8 @@
   
 
   
+
+  
 </section>
 
       </div>
@@ -902,6 +921,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -974,6 +995,8 @@
         </div>
       
     </div>
+  
+
   
 
   
@@ -1072,6 +1095,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
       </div>
@@ -1129,6 +1154,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
       </div>
@@ -1157,6 +1184,8 @@ Override this method to provide a different algorithm.</p>
   
   
   
+  
+
   
 
   
@@ -1251,6 +1280,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
@@ -1318,6 +1349,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
@@ -1368,6 +1401,8 @@ Override this method to provide a different algorithm.</p>
         </div>
       
     </div>
+  
+
   
 
   
@@ -1461,6 +1496,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
@@ -1481,7 +1518,7 @@ Override this method to provide a different algorithm.</p>
 
   <p>Callback type for job allocation.</p>
 
-    <div class='pre p1 fill-light mt0'>allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persisted: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+    <div class='pre p1 fill-light mt0'>allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, persisted: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
   
     <p>
       Type:
@@ -1512,6 +1549,15 @@ Override this method to provide a different algorithm.</p>
       
         <div class='space-bottom0'>
           <div>
+            <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The ID of the instance to which the job was allocated.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
             <span class='code bold'>persisted</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
 	    Whether the allocation was persisted to the database 
 <em>in this call</em>
@@ -1525,16 +1571,9 @@ Override this method to provide a different algorithm.</p>
           
         </div>
       
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The ID of the instance to which the job was allocated.
-
-          </div>
-          
-        </div>
-      
     </div>
+  
+
   
 
   
@@ -1602,6 +1641,8 @@ Override this method to provide a different algorithm.</p>
         </div>
       
     </div>
+  
+
   
 
   
@@ -1695,6 +1736,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
@@ -1754,6 +1797,8 @@ Override this method to provide a different algorithm.</p>
         </div>
       
     </div>
+  
+
   
 
   
@@ -1849,6 +1894,8 @@ Override this method to provide a different algorithm.</p>
   
 
   
+
+  
 </section>
 
           
@@ -1871,7 +1918,7 @@ Override this method to provide a different algorithm.</p>
 This is passed to and called by <a href="#atributo_allocate"><code>_allocate</code></a>.
 If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make sure you call it.</p>
 
-    <div class='pre p1 fill-light mt0'>_allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, persist: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+    <div class='pre p1 fill-light mt0'>_allocateCallback(err: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>?, instance_id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, persist: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
   
     <p>
       Type:
@@ -1902,15 +1949,6 @@ If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make su
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>persist</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    Whether the allocation should be persisted to the database.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
             <span class='code bold'>instance_id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The instance ID to which the job should be allocated.
 
@@ -1918,7 +1956,18 @@ If you override <a href="#atributo_allocate"><code>_allocate</code></a>, make su
           
         </div>
       
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>persist</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    Whether the allocation should be persisted to the database.
+
+          </div>
+          
+        </div>
+      
     </div>
+  
+
   
 
   

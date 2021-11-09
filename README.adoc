@@ -8,7 +8,7 @@ Node.js module for managing allocation of job IDs across a variable number of
 instance IDs.
 
 A typical use would be to allocate work across a number of worker processes.
-Job allocations are stored in a SQLite database which any worker (instance)
+Job allocations are stored in a SQLite or PostgreSQL database which any worker (instance)
 can access.
 
 You can add a new instance ID and jobs will start to be allocated to it.
@@ -152,13 +152,13 @@ The default algorithm for allocating a job to an instance is to hash the job ID,
 treat the resulting digest as a 32 bit integer and use that as an index into
 the list of available instances.
 
-You can change the default algorithm by overriding the https://rawgit-gjgjyaqiln.now.sh/davedoesdev/atributo/master/docs/index.html#atributo_allocate[`_allocate`] method.
+You can change the default algorithm by overriding the http://rawgit.davedoesdev.com/davedoesdev/atributo/master/docs/index.html#atributo_allocate[`_allocate`] method.
 
 Here's an example which knows the ID of the instance on which it's running and
 only persists an allocation to the database if it's for that instance.
 
 Since `_allocate` is only called when the allocation doesn't already exist in
-the database, if you call https://rawgit-gjgjyaqiln.now.sh/davedoesdev/atributo/master/docs/index.html#atributoallocate[`allocate`] for each job on every
+the database, if you call http://rawgit.davedoesdev.com/davedoesdev/atributo/master/docs/index.html#atributoallocate[`allocate`] for each job on every
 instance, this example can start a job on its instance when first allocated.
 
 [source,javascript]
@@ -185,12 +185,12 @@ class ExampleAtributo extends Atributo
     }
 
     _allocate(job_id, instance_ids, cb) {
-        super._allocate(job_id, instance_ids, (err, persist, instance_id) => {
+        super._allocate(job_id, instance_ids, (err, instance_id, persist) => {
             if (instance_id !== this._instance_id) {
                 // Don't persist if not our instance
                 persist = false;                
             }
-            cb(err, persist, instance_id);
+            cb(err, instance_id, persist);
         });
     }
 }
@@ -311,12 +311,20 @@ async.times(2, (i, cb) => {
 npm install atributo
 ----
 
+
+=== SQLite
+
 In the top-level directory you'll find a file called `atributo.empty.sqlite3`.
 This contains an empty copy of the database `atributo` needs to store instance
 availablity and job allocations.
 
 You should use a _copy_ of this file in your application and pass its location
-as `db_filename` when constructing https://rawgit-gjgjyaqiln.now.sh/davedoesdev/atributo/master/docs/index.html#atributo[`Atributo`] objects.
+as `db_filename` when constructing http://rawgit.davedoesdev.com/davedoesdev/atributo/master/docs/index.html#atributo[`Atributo`] objects.
+
+=== PostgreSQL
+
+Pass `pg` as `db_type` and the https://node-postgres.com/api/client[`node-postgres` configuration] as `db`
+when constructing http://rawgit.davedoesdev.com/davedoesdev/atributo/master/docs/index.html#atributo[`Atributo`] objects.
 
 == Licence
 
