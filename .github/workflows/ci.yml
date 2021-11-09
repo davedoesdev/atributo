@@ -41,6 +41,7 @@ jobs:
       - name: Coverage
         run: npx grunt coverage
         env:
+          PGHOST: localhost
           NODE_CONFIG: '{"db": {"host": "localhost"}}'
 
       - name: Coveralls
