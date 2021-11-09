@@ -48,7 +48,7 @@ jobs:
         run: "psql -c \"create database \\\"atributo\\\";\""
 
       - name: Apply migrations
-        run: npx pg-migrate up
+        run: npx node-pg-migrate up
 
       - name: Coverage
         run: npx grunt coverage
