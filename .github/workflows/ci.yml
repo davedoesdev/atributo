@@ -42,6 +42,7 @@ jobs:
         run: npx grunt coverage
         env:
           PGHOST: localhost
+          PGPASSWORD: postgres
           NODE_CONFIG: '{"db": {"host": "localhost"}}'
 
       - name: Coveralls
