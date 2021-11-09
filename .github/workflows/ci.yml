@@ -25,6 +25,7 @@ jobs:
 
     env:
       PGHOST: localhost
+      PGUSER: postgres
       PGPASSWORD: postgres
       NODE_CONFIG: '{"db": {"host": "localhost"}}'
 
