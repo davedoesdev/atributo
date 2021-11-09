@@ -40,6 +40,8 @@ jobs:
 
       - name: Coverage
         run: npx grunt coverage
+        env:
+          NODE_CONFIG: '{"db": {"host": "localhost"}}'
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
