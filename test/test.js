@@ -460,7 +460,7 @@ describe(`atributo (${db_type_name})`, function ()
             return this.skip();
         }
 
-        this.timeout(5000);
+        this.timeout(30000);
 
         class TestAtributo extends Atributo
         {
