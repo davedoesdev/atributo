@@ -22,7 +22,7 @@ before_test:
   - "psql -c \"create database \\\"atributo\\\";\""
 
 test_script:
-  - npm run pg-migrate up
+  - npx node-pg-migrate up
   - .\node_modules\.bin\grunt lint test-all-db
 
 build: off
