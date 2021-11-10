@@ -14,8 +14,7 @@ services:
 install:
   - ps: Install-Product node $env:nodejs_version
   - node --version
-  - npm --version
-  - npm install
+  - npm ci
 
 before_test:
   - set path=%postgres_path%\\bin;%path%
