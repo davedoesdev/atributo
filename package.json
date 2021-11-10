@@ -38,7 +38,7 @@
     "c8": "^7.10.0",
     "chai": "^4.3.4",
     "config": "^3.3.6",
-    "documentation": "^13.2.5",
+    "documentation": "documentationjs/documentation",
     "grunt": "^1.4.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-env": "^1.0.1",
@@ -47,5 +47,11 @@
     "migrate": "^1.7.0",
     "mocha": "^9.1.3",
     "node-pg-migrate": "^6.0.0"
-  }
+  },
+  "pnpm": {
+    "overrides": {
+      "node-gyp": "^8.4.0"
+    }
+  },
+  "packageManager": "pnpm@^6.21.0"
 }
