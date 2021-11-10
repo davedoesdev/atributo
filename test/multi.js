@@ -27,20 +27,21 @@ describe(`${name} (${db_type_name})`, function ()
     it('should be able to make unavailable while allocating', function (cb)
     {
         let done = false,
-            timeout = null,
+            timeout,
+            ao = null,
             made_unavailable = false;
 
         function next()
         {
             if (done)
             {
-                return cb();
+                return;
             }
 
             timeout = setTimeout(() =>
             {
-                timeout = null;
-                new Atributo(ao_options).on('ready', function ()
+                ao = new Atributo(ao_options);
+                ao.on('ready', function ()
                 {
                     let instance = 'marker' + Math.floor(Math.random() * num_tasks);
                     this.unavailable(instance, Math.random() < 0.5, iferr(cb, () =>
@@ -48,15 +49,15 @@ describe(`${name} (${db_type_name})`, function ()
                         made_unavailable = true;
                         timeout = setTimeout(() =>
                         {
-                            timeout = null;
                             this.available(instance, iferr(cb, () =>
                             {
+                                ao = null;
                                 this.close(next);
                             }));
                         }, 250);
                     }));
-                })
-                .on('error', cb);
+                });
+                ao.on('error', cb);
             }, 500);
         };
 
@@ -69,11 +70,12 @@ describe(`${name} (${db_type_name})`, function ()
         {
             expect(made_unavailable).to.be.true;
             done = true;
-            if (timeout)
+            clearTimeout(timeout);
+            if (ao)
             {
-                clearTimeout(timeout);
-                cb();
+                return ao.close(cb);
             }
+            cb();
         }));
     });
 });
