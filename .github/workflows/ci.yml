@@ -47,7 +47,7 @@ jobs:
         run: npx grunt lint
 
       - name: Create database
-        run: "psql -c \"create database \\\"atributo\\\";\""
+        run: psql -c 'create database "atributo";'
 
       - name: Apply migrations
         run: npx node-pg-migrate up
