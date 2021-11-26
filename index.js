@@ -1,7 +1,7 @@
 'use strict';
 
 const crypto = require('crypto'),
-      sqlite3 = require('@vscode/sqlite3'),
+      sqlite3 = require('sqlite3'),
       { Client } = require('pg'),
       async = require('async'),
       iferr = require('iferr'),
