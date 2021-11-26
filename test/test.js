@@ -4,7 +4,7 @@ const path = require('path'),
       async = require('async'),
       iferr = require('iferr'),
       expect = require('chai').expect,
-      sqlite3 = require('sqlite3'),
+      sqlite3 = require('@vscode/sqlite3'),
       Atributo = require('..').Atributo,
       { db_type, db_type_name, ao_options } = require('./db_type');
 
