@@ -1,7 +1,7 @@
 {
   "name": "atributo",
   "description": "Allocate jobs across a variable number of instances",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/davedoesdev/atributo",
   "author": {
     "name": "David Halls",
@@ -32,7 +32,7 @@
     "async": "^3.2.2",
     "iferr": "^1.0.2",
     "pg": "^8.7.1",
-    "sqlite3": "^5.0.2"
+    "@vscode/sqlite3": "^5.0.7"
   },
   "devDependencies": {
     "c8": "^7.10.0",
@@ -47,11 +47,5 @@
     "migrate": "^1.7.0",
     "mocha": "^9.1.3",
     "node-pg-migrate": "^6.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "node-gyp": "^8.4.0"
-    }
-  },
-  "packageManager": "pnpm@^6.21.0"
+  }
 }
