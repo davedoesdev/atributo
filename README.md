@@ -137,12 +137,12 @@ new Atributo({ db_filename: 'atributo.sqlite3' }).on('ready', function () {
 });
 ```
 
-  - This is a new allocation persisted to the database in this call.
+-   This is a new allocation persisted to the database in this call.
 
-  - This is an allocation which already existed in the database before
+-   This is an allocation which already existed in the database before
     the instance was made unavailable.
 
-  - The allocation is removed from the database.
+-   The allocation is removed from the database.
 
 # Allocator
 
