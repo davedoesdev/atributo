@@ -6,15 +6,13 @@ const path = require('path'),
       iferr = require('iferr'),
       { ao_options } = require('./db_type');
 
-let expect;
-before(async () => {
-    ({ expect } = await import('chai'));
-});
-
 module.exports = function (num_allocations, allocations_limit)
 {
     return function (i, cb)
     {
+        import('chai').then(function ({ expect })
+        {
+
         async.waterfall(
         [
             function (cb)
@@ -52,6 +50,8 @@ module.exports = function (num_allocations, allocations_limit)
                 ao.close(cb);
             }
         ], cb);
+
+        });
     };
 };
 

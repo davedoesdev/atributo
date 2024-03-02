@@ -12,9 +12,12 @@ const path = require('path'),
 module.exports = function(name, make_launch_task)
 {
 
-describe(`${name} (${db_type_name})`, async function ()
+describe(`${name} (${db_type_name})`, function ()
 {
-    const { expect } = await import('chai');
+    let expect;
+    before(async () => {
+        ({ expect } = await import('chai'));
+    });
 
     this.timeout(10 * 60 * 1000);
 
