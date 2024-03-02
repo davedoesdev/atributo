@@ -2,13 +2,17 @@
 
 const path = require('path'),
       async = require('async'),
-      expect = require('chai').expect,
       Atributo = require('..').Atributo,
       iferr = require('iferr'),
       { db_type_name, ao_options } = require('./db_type'),
       num_tasks = 5,
       num_allocations = 20,
       allocations_limit = 20;
+
+let expect;
+before(async () => {
+    ({ expect } = await import('chai'));
+});
 
 module.exports = function(name, make_launch_task)
 {

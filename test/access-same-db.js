@@ -2,10 +2,14 @@
 
 const path = require('path'),
       async = require('async'),
-      expect = require('chai').expect,
       Atributo = require('..').Atributo,
       iferr = require('iferr'),
       { ao_options } = require('./db_type');
+
+let expect;
+before(async () => {
+    ({ expect } = await import('chai'));
+});
 
 module.exports = function (num_tasks)
 {
