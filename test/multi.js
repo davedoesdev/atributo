@@ -9,16 +9,13 @@ const path = require('path'),
       num_allocations = 20,
       allocations_limit = 20;
 
-let expect;
-before(async () => {
-    ({ expect } = await import('chai'));
-});
-
 module.exports = function(name, make_launch_task)
 {
 
-describe(`${name} (${db_type_name})`, function ()
+describe(`${name} (${db_type_name})`, async function ()
 {
+    const { expect } = await import('chai');
+
     this.timeout(10 * 60 * 1000);
 
     it('many Atributos should be able to access the same database', function (cb)
